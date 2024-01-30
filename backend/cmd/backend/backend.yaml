@@ -1,0 +1,5 @@
+env: "dev"
+port: "10000"
+
+database:
+  file: rss.db
