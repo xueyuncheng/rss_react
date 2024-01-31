@@ -1,7 +1,6 @@
-import useSWR, { Fetcher } from "swr";
+import useSWR from "swr";
 
-const apiBase = "http://localhost:10000/api";
-
+export const apiBase = "http://localhost:10000/api";
 
 export type RSSField = {
   id: number;
@@ -12,13 +11,11 @@ export type RSSField = {
 export type ListRSSResp = {
   total: number;
   items: RSSField[];
-}
+};
 
-const fetcher  = (...args) => fetch(...args).then((res) => res.json());
-
-export function ListRSS() {
-  return useSWR(`${apiBase}/rsses?page=1&page_size=10`, fetcher);
-
+export function ListRSS(page_no: number) {
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  return useSWR(`${apiBase}/rsses?page_no=${page_no}&page_size=10`, fetcher);
 }
 
 export async function DeleteRSS(id: number) {

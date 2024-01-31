@@ -10,16 +10,34 @@ import {
 } from "../api/rss";
 import Loading from "../component/loading";
 import Error from "../component/error";
+import Pagination from "./pagination";
 
 function RSSApp() {
-  const { data, mutate, isLoading, error } = ListRSS();
+  const [pageNo, setPageNo] = useState(1);
 
+  const { data, mutate, isLoading, error } = ListRSS(pageNo);
   return (
     <div className="ml-10">
-      <h1 className="">RSS 列表</h1>
+      <h1 className="ml-4">RSS 列表</h1>
       {isLoading && <Loading />}
       {error && <Error />}
-      {data && <RSSList rsses={data.data.items} reload={() => mutate()} />}
+      <div className="h-[400px] overflow-y-auto">
+        {data && <RSSList rsses={data.data.items} reload={() => mutate()} />}
+      </div>
+      {data && (
+        <Pagination
+          prevDisabled={pageNo <= 1}
+          onPrevClick={() => {
+            setPageNo(pageNo - 1);
+            mutate();
+          }}
+          nextDisabled={pageNo >= Math.ceil(data.data.total / 10)}
+          onNextClick={() => {
+            setPageNo(pageNo + 1);
+            mutate();
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -37,7 +55,7 @@ function RSSList({ rsses, reload }: RSSListProps) {
     <div>
       <button
         type="button"
-        className="btn btn-sm -ml-3 my-2"
+        className="btn btn-sm my-2"
         onClick={() => {
           setID(0);
           setShow(true);
@@ -54,9 +72,10 @@ function RSSList({ rsses, reload }: RSSListProps) {
           }}
         />
       )}
-      <ol className="list-decimal">
-        {rsses.map((rss) => (
+      <ul>
+        {rsses.map((rss, index) => (
           <RSS
+            index={index}
             key={rss.id}
             rss={rss}
             setID={setID}
@@ -64,19 +83,20 @@ function RSSList({ rsses, reload }: RSSListProps) {
             reload={reload}
           />
         ))}
-      </ol>
+      </ul>
     </div>
   );
 }
 
 type RSSProps = {
+  index: number;
   rss: RSSField;
   setID: (id: number) => void;
   setShow: (show: boolean) => void;
   reload: () => void;
 };
 
-function RSS({ rss, setID, setShow, reload }: RSSProps) {
+function RSS({ index, rss, setID, setShow, reload }: RSSProps) {
   const handleDeleteRSS = async (id: number) => {
     await DeleteRSS(id);
 
@@ -85,7 +105,7 @@ function RSS({ rss, setID, setShow, reload }: RSSProps) {
 
   return (
     <li key={rss.id}>
-      {rss.name} ({rss.url})
+      {index + 1}. {rss.name} ({rss.url})
       <button
         className="btn btn-sm ml-2"
         onClick={() => {
