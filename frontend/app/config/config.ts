@@ -15,7 +15,3 @@ export type ResponsePage<T> = {
 
 export const DefaultFetcher = (url: string) =>
   fetch(url).then((res) => res.json())
-
-// export { Endpoint }
-
-// export type { Response }
