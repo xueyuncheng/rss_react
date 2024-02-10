@@ -18,15 +18,6 @@ func (b *Backend) route() error {
 
 	api := r.Group("/api")
 
-	rss := api.Group("/rsses")
-	{
-		rss.GET("", wrap(b.ListRSS))
-		rss.GET("/:id", wrap(b.GetRSS))
-		rss.POST("", wrap(b.AddRSS))
-		rss.PUT("/:id", wrap(b.UpdateRSS))
-		rss.DELETE("/:id", wrap(b.DeleteRSS))
-	}
-
 	channel := api.Group("/channels")
 	{
 		channel.GET("", wrap(b.ListChannel))
