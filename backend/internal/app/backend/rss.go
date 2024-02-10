@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"backend/internal/app/backend/table"
+	"backend/internal/pkg/table"
 	"context"
 	"fmt"
 	"log/slog"

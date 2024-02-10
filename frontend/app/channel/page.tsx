@@ -1,0 +1,126 @@
+'use client'
+import { useState } from 'react'
+import useSWR from 'swr'
+import {
+  Endpoint,
+  DefaultFetcher,
+  Response,
+  ResponsePage,
+} from '../config/config'
+
+type Channel = {
+  id: number
+  title: string
+  source: string
+  description: string
+}
+
+type ChannelListProps = {
+  setChannelID: (channel_id: number) => void
+}
+
+function ChannelList({ setChannelID }: ChannelListProps) {
+  const [show, setShow] = useState(false)
+  const [source, setSource] = useState('')
+
+  const { data, isLoading, error, mutate } = useSWR<ResponsePage<Channel>>(
+    Endpoint + '/channels?page_no=1&page_size=100',
+    DefaultFetcher
+  )
+
+  const handleSubmitClick = async function () {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        source: source,
+      }),
+    }
+
+    const res: Response<any> = await fetch(
+      Endpoint + '/channels',
+      options
+    ).then((res) => res.json())
+
+    if (res.err !== '') {
+      alert(res.err)
+    }
+
+    setShow(false)
+    mutate()
+  }
+
+  const handleDeleteClick = async function (channel_id: number) {
+    const options = {
+      method: 'DELETE',
+    }
+
+    const res: Response<any> = await fetch(
+      Endpoint + `/channels/${channel_id}`,
+      options
+    ).then((res) => res.json())
+
+    if (res.err !== '') {
+      alert(res.err)
+    }
+
+    mutate()
+  }
+
+  return (
+    <div>
+      <h1>Channel 列表</h1>
+      <button className="btn" onClick={() => setShow(true)}>
+        添加channel
+      </button>
+      {isLoading && <h2>Loading</h2>}
+      {error && <h2 className="bg-red-500">error</h2>}
+      <ul>
+        {data &&
+          data.data.items.map((channel, index) => (
+            <li key={channel.id} onClick={() => setChannelID(channel.id)}>
+              {index + 1}. {channel.source}
+              <button
+                onClick={() => handleDeleteClick(channel.id)}
+                className="btn btn-sm ml-2"
+              >
+                删除
+              </button>
+            </li>
+          ))}
+      </ul>
+      {show && (
+        <dialog className="modal modal-open">
+          <div className="modal-box w-fit">
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => setShow(false)}
+            >
+              ✕
+            </button>
+            <div className="mt-5">
+              <label htmlFor="source">来源URL: </label>
+              <input
+                id="source"
+                name="source"
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                placeholder="请输入来源URL"
+                className="border"
+              ></input>
+            </div>
+            <div className="text-right mt-2">
+              <button className="btn btn-sm" onClick={handleSubmitClick}>
+                提交
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
+    </div>
+  )
+}
+
+export default ChannelList

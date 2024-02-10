@@ -1,0 +1,11 @@
+version: "3.1"
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=helloworld
+      - POSTGRES_DB=rss
+    ports:
+      - 5432:5432

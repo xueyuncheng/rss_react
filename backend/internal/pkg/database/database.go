@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/glebarez/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
 
 type Config struct {
-	File string
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	DBName   string `yaml:"db_name"`
 }
 
 type Database struct {
@@ -20,7 +24,9 @@ type Database struct {
 }
 
 func New(config *Config) (*Database, error) {
-	db, err := gorm.Open(sqlite.Open(config.File), &gorm.Config{
+	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable TimeZone=Asia/Shanghai",
+		config.Host, config.Port, config.Username, config.Password, config.DBName)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},

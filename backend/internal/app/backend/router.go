@@ -27,6 +27,18 @@ func (b *Backend) route() error {
 		rss.DELETE("/:id", wrap(b.DeleteRSS))
 	}
 
+	channel := api.Group("/channels")
+	{
+		channel.GET("", wrap(b.ListChannel))
+		channel.POST("", wrap(b.AddChannel))
+		channel.DELETE("/:id", wrap(b.DeleteChannel))
+	}
+
+	story := api.Group("/stories")
+	{
+		story.GET("", wrap(b.ListStory))
+	}
+
 	slog.Info("http listen addr", "addr", b.config.Addr())
 	if err := r.Run(b.config.Addr()); err != nil {
 		slog.Error("r.Run() error", "err", err)
@@ -65,7 +77,7 @@ func wrap[T1, T2 any](f func(context.Context, *T1) (*T2, error)) gin.HandlerFunc
 
 		resp, err := f(ctx, req)
 		if err != nil {
-			ctx.Set("is_ok", false)
+			ctx.Set(ctxIsOK, false)
 
 			ctx.JSON(http.StatusOK, Response{Err: err.Error()})
 

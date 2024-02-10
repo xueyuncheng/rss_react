@@ -5,6 +5,8 @@ import (
 	"backend/internal/pkg/database"
 	"fmt"
 	"log/slog"
+
+	"github.com/robfig/cron/v3"
 )
 
 type Config struct {
@@ -21,13 +23,22 @@ func (c *Config) Addr() string {
 type Backend struct {
 	config *Config
 
-	db *database.Database
+	db   *database.Database
+	cron *cron.Cron
 }
 
 func New(config *Config) error {
 	b := &Backend{
 		config: config,
+		cron:   cron.New(),
 	}
+
+	// run at every minute
+	if _, err := b.cron.AddFunc("* * * * *", b.bgUpdateStory); err != nil {
+		slog.Error("cron.AddFunc() error", "err", err)
+		return fmt.Errorf("cron.AddFunc() error, err = %w", err)
+	}
+	b.cron.Start()
 
 	db, err := database.New(config.Database)
 	if err != nil {
