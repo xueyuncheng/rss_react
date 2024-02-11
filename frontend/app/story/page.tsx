@@ -1,6 +1,5 @@
 import useSWR from 'swr'
 import { DefaultFetcher, Endpoint, ResponsePage } from '../config/config'
-import useSWRInfinite from 'swr/infinite'
 import { useState } from 'react'
 
 export type StoryListProps = {

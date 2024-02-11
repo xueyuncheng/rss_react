@@ -10,8 +10,9 @@ import {
 
 type Channel = {
   id: number
-  title: string
+  name: string
   source: string
+  title: string
   description: string
 }
 
@@ -22,6 +23,7 @@ type ChannelListProps = {
 function ChannelList({ setChannelID }: ChannelListProps) {
   const [show, setShow] = useState(false)
   const [source, setSource] = useState('')
+  const [name, setName] = useState('')
 
   const { data, isLoading, error, mutate } = useSWR<ResponsePage<Channel>>(
     Endpoint + '/channels?page_no=1&page_size=100',
@@ -35,6 +37,7 @@ function ChannelList({ setChannelID }: ChannelListProps) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        name: name,
         source: source,
       }),
     }
@@ -72,7 +75,7 @@ function ChannelList({ setChannelID }: ChannelListProps) {
   return (
     <div>
       <h1>Channel 列表</h1>
-      <button className="btn" onClick={() => setShow(true)}>
+      <button className="btn btn-sm mb-5" onClick={() => setShow(true)}>
         添加channel
       </button>
       {isLoading && <h2>Loading</h2>}
@@ -81,7 +84,7 @@ function ChannelList({ setChannelID }: ChannelListProps) {
         {data &&
           data.data.items.map((channel, index) => (
             <li key={channel.id} onClick={() => setChannelID(channel.id)}>
-              {index + 1}. {channel.source}
+              {index + 1}. {channel.name}
               <button
                 onClick={() => handleDeleteClick(channel.id)}
                 className="btn btn-sm ml-2"
@@ -100,16 +103,29 @@ function ChannelList({ setChannelID }: ChannelListProps) {
             >
               ✕
             </button>
-            <div className="mt-5">
-              <label htmlFor="source">来源URL: </label>
-              <input
-                id="source"
-                name="source"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                placeholder="请输入来源URL"
-                className="border"
-              ></input>
+            <div className="flex flex-col space-y-3 mt-5">
+              <div className="flex justify-end">
+                <label>Channel名称:</label>
+                <input
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="请输入channel名称"
+                  className="border ml-2"
+                />
+              </div>
+              <div className="flex justify-end">
+                <label htmlFor="source">来源URL:</label>
+                <input
+                  id="source"
+                  name="source"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  placeholder="请输入来源URL"
+                  className="border ml-2"
+                />
+              </div>
             </div>
             <div className="text-right mt-2">
               <button className="btn btn-sm" onClick={handleSubmitClick}>

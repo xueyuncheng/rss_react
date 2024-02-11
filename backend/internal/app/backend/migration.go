@@ -7,7 +7,6 @@ import (
 
 func (b *Backend) migrate() error {
 	if err := b.db.DB.AutoMigrate(
-		&table.RSS{},
 		&table.Channel{},
 		&table.Story{},
 	); err != nil {

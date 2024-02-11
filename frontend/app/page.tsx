@@ -7,21 +7,26 @@ export default function Home() {
   const [channelID, setChannelID] = useState(0)
 
   return (
-    <main>
-      <div className="flex justify-center mb-10">
-        <div className="navbar bg-base-300 w-2/3 rounded-full flex justify-center">
+    <main className="mx-24">
+      <div className="flex justify-center mt-3 mb-10">
+        <div className="navbar bg-slate-100 rounded-full flex justify-center">
           <div>
-            <a className="btn btn-ghost text-xl" href="/">
+            <a
+              className="btn btn-ghost rounded-full text-xl hover:bg-slate-200"
+              href="/"
+            >
               RSS阅读器
             </a>
           </div>
         </div>
       </div>
-      <div className="ml-10 flex">
-        <div className="flex-none max-w-max">
+
+      <div className="flex">
+        <div className="flex-none w-1/6">
           <ChannelList setChannelID={setChannelID} />
         </div>
-        <div className="flex-1 ml-5">
+        <div className="border-4 mx-2 border-green-200"></div>
+        <div className="flex-auto">
           <StoryList channel_id={channelID} />
         </div>
       </div>

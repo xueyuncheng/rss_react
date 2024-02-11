@@ -6,17 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type RSS struct {
-	gorm.Model
-
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
 type Channel struct {
 	gorm.Model
 
-	Source      string
+	Name   string
+	Source string
+
 	Title       string
 	Link        string
 	Description string
@@ -30,11 +25,11 @@ type Channel struct {
 type Story struct {
 	gorm.Model
 
-	Title        string
-	Link         string
-	Description  string
-	Guid         string
-	PubDate      time.Time
-	ChannelID    int
-	ChannelTitle string
+	Title       string
+	Link        string
+	Description string
+	Guid        string
+	PubDate     time.Time
+	ChannelID   int
+	ChannelName string
 }

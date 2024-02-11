@@ -16,6 +16,7 @@ import (
 
 type Channel struct {
 	ID          int    `json:"id"`
+	Name        string `json:"name"`
 	Source      string `json:"source"`
 	Title       string `json:"title"`
 	Link        string `json:"link"`
@@ -63,6 +64,7 @@ func (b *Backend) ListChannel(ctx context.Context, req *ListChannelReq) (*ListCh
 }
 
 type AddChannelReq struct {
+	Name   string `json:"name" binding:"required"`
 	Source string `json:"source" binding:"required"`
 }
 
@@ -92,6 +94,7 @@ func (b *Backend) AddChannel(ctx context.Context, req *AddChannelReq) (*AddChann
 	}
 
 	channel := &table.Channel{
+		Name:        req.Name,
 		Source:      req.Source,
 		Title:       feed.Title,
 		Link:        feed.Link,
@@ -206,13 +209,13 @@ func updateChannel(ctx context.Context, channel *table.Channel) error {
 			continue
 		}
 		story := &table.Story{
-			Title:        item.Title,
-			Link:         item.Link,
-			Description:  item.Description,
-			Guid:         item.GUID,
-			PubDate:      *item.PublishedParsed,
-			ChannelID:    int(channel.ID),
-			ChannelTitle: channel.Title,
+			Title:       item.Title,
+			Link:        item.Link,
+			Description: item.Description,
+			Guid:        item.GUID,
+			PubDate:     *item.PublishedParsed,
+			ChannelID:   int(channel.ID),
+			ChannelName: channel.Name,
 		}
 		stories = append(stories, story)
 	}
