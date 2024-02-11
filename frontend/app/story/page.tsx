@@ -22,16 +22,21 @@ function StoryList({ channel_id }: StoryListProps) {
 
   const pages: any[] = []
   for (let i = 1; i <= pageNo; i++) {
-    pages.push(<Page channel_id={channel_id} page_no={i} />)
+    pages.push(<Page key={i} channel_id={channel_id} page_no={i} />)
   }
 
   return (
     <div>
       <h2>Story列表</h2>
-      <ul>{pages}</ul>
-      <button className="btn btn-sm mt-2" onClick={() => setPageNo(pageNo + 1)}>
-        加载更多
-      </button>
+      <div className="h-screen overflow-auto">
+        <ul>{pages}</ul>
+        <button
+          className="btn btn-sm mt-2"
+          onClick={() => setPageNo(pageNo + 1)}
+        >
+          加载更多
+        </button>
+      </div>
     </div>
   )
 }
@@ -56,9 +61,8 @@ function Page({ channel_id, page_no }: PageProps) {
     return []
   }
 
-  return data?.data.items.map((story, index) => (
+  return data?.data.items.map((story) => (
     <li key={story.id}>
-      {(page_no - 1) * 10 + index + 1}.
       <a
         href={story.link}
         target="_blank"

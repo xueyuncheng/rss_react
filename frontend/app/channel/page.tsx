@@ -30,7 +30,10 @@ function ChannelList({ setChannelID }: ChannelListProps) {
     DefaultFetcher
   )
 
-  const handleSubmitClick = async function () {
+  const handleSubmitClick = async function (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) {
+    event.currentTarget.disabled = true
     const options = {
       method: 'POST',
       headers: {
@@ -74,23 +77,28 @@ function ChannelList({ setChannelID }: ChannelListProps) {
 
   return (
     <div>
-      <h1>Channel 列表</h1>
-      <button className="btn btn-sm mb-5" onClick={() => setShow(true)}>
-        添加channel
-      </button>
+      <div className="flex justify-between items-center mb-2">
+        <h1>Channel 列表</h1>
+        <button className="btn btn-sm" onClick={() => setShow(true)}>
+          添加
+        </button>
+      </div>
+      <hr />
       {isLoading && <h2>Loading</h2>}
       {error && <h2 className="bg-red-500">error</h2>}
-      <ul>
+      <ul className="flex flex-col space-y-2 mt-3">
         {data &&
-          data.data.items.map((channel, index) => (
+          data.data.items.map((channel) => (
             <li key={channel.id} onClick={() => setChannelID(channel.id)}>
-              {index + 1}. {channel.name}
-              <button
-                onClick={() => handleDeleteClick(channel.id)}
-                className="btn btn-sm ml-2"
-              >
-                删除
-              </button>
+              <div className="flex justify-between items-center hover:bg-slate-200 rounded-full pl-2">
+                {channel.name}
+                <button
+                  onClick={() => handleDeleteClick(channel.id)}
+                  className="btn btn-sm ml-2"
+                >
+                  删除
+                </button>
+              </div>
             </li>
           ))}
       </ul>
