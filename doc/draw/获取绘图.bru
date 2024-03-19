@@ -1,0 +1,15 @@
+meta {
+  name: 获取绘图
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:10000/api/draws/1
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  id: 1
+}

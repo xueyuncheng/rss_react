@@ -33,3 +33,10 @@ type Story struct {
 	ChannelID   int
 	ChannelName string
 }
+
+type Draw struct {
+	gorm.Model
+
+	Name string
+	Data string
+}

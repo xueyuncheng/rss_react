@@ -30,6 +30,15 @@ func (b *Backend) route() error {
 		story.GET("", wrap(b.ListStory))
 	}
 
+	draw := api.Group("/draws")
+	{
+		draw.GET("", wrap(b.ListDraw))
+		draw.GET("/:id", wrap(b.GetDraw))
+		draw.POST("", wrap(b.AddDraw))
+		draw.PUT("/:id", wrap(b.UpdateDraw))
+		draw.DELETE("/:id", wrap(b.DeleteDraw))
+	}
+
 	slog.Info("http listen addr", "addr", b.config.Addr())
 	if err := r.Run(b.config.Addr()); err != nil {
 		slog.Error("r.Run() error", "err", err)

@@ -1,0 +1,18 @@
+meta {
+  name: 添加绘图
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:10000/api/draws
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "draw 1",
+    "data": "{}"
+  }
+}
