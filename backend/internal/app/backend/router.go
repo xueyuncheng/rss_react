@@ -39,6 +39,22 @@ func (b *Backend) route() error {
 		draw.DELETE("/:id", wrap(b.DeleteDraw))
 	}
 
+	invest := api.Group("/investments")
+	{
+		invest.GET("", wrap(b.GetInvestment))
+		invest.POST("", wrap(b.AddInvestment))
+		invest.DELETE("/:id", wrap(b.DeleteInvestment))
+		invest.PUT("/:id", wrap(b.UpdateInvestment))
+	}
+
+	domain := api.Group("/domains")
+	{
+		domain.POST("", wrap(b.AddDomain))
+		domain.DELETE("/:id", wrap(b.DeleteDomain))
+		domain.GET("", wrap(b.ListDomain))
+		domain.PUT("/:id", wrap(b.UpdateDomain))
+	}
+
 	slog.Info("http listen addr", "addr", b.config.Addr())
 	if err := r.Run(b.config.Addr()); err != nil {
 		slog.Error("r.Run() error", "err", err)

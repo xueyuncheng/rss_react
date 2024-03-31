@@ -1,0 +1,18 @@
+meta {
+  name: 更新domain
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:10000/api/domains/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": 1,
+    "name": "xx"
+  }
+}

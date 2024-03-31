@@ -40,3 +40,17 @@ type Draw struct {
 	Name string
 	Data string
 }
+
+type Domain struct {
+	gorm.Model
+
+	Name string
+}
+
+type Investment struct {
+	gorm.Model
+
+	MoneyYuan  float64
+	DomainID   int
+	DomainName string
+}

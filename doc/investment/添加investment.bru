@@ -1,0 +1,19 @@
+meta {
+  name: 添加investment
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:10000/api/investments
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "domain_id": 1,
+    "domain_name": "标普500",
+    "money_yuan": 1.1
+  }
+}
