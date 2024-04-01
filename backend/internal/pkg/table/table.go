@@ -54,3 +54,10 @@ type Investment struct {
 	DomainID   int
 	DomainName string
 }
+
+type Asset struct {
+	gorm.Model
+
+	Date      string
+	MoneyYuan float64
+}

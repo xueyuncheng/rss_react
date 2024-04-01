@@ -55,6 +55,14 @@ func (b *Backend) route() error {
 		domain.PUT("/:id", wrap(b.UpdateDomain))
 	}
 
+	asset := api.Group("/assets")
+	{
+		asset.POST("", wrap(b.AddAsset))
+		asset.DELETE("/:id", wrap(b.DeleteAsset))
+		asset.PUT("/:id", wrap(b.UpdateAsset))
+		asset.GET("", wrap(b.ListAsset))
+	}
+
 	slog.Info("http listen addr", "addr", b.config.Addr())
 	if err := r.Run(b.config.Addr()); err != nil {
 		slog.Error("r.Run() error", "err", err)
