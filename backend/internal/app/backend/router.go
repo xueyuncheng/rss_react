@@ -18,6 +18,8 @@ func (b *Backend) route() error {
 
 	api := r.Group("/api")
 
+	api.POST("/login", wrap(b.Login))
+
 	channel := api.Group("/channels")
 	{
 		channel.GET("", wrap(b.ListChannel))
@@ -38,6 +40,8 @@ func (b *Backend) route() error {
 		draw.PUT("/:id", wrap(b.UpdateDraw))
 		draw.DELETE("/:id", wrap(b.DeleteDraw))
 	}
+
+	api.Use(b.auth())
 
 	invest := api.Group("/investments")
 	{

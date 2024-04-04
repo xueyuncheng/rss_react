@@ -13,6 +13,7 @@ func (b *Backend) migrate() error {
 		&table.Domain{},
 		&table.Investment{},
 		&table.Asset{},
+		&table.User{},
 	); err != nil {
 		slog.Error("b.db.AutoMigrate() error", "err", err)
 	}

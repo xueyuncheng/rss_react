@@ -61,3 +61,10 @@ type Asset struct {
 	Date      string
 	MoneyYuan float64
 }
+
+type User struct {
+	gorm.Model
+
+	Name     string
+	Password string
+}

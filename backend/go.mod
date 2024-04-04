@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/robfig/cron/v3 v3.0.0
 	gorm.io/gorm v1.25.7-0.20240204074919-46816ad31dde
 )
