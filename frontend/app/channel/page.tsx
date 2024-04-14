@@ -1,12 +1,7 @@
 'use client'
 import { useState } from 'react'
 import useSWR from 'swr'
-import {
-  Endpoint,
-  DefaultFetcher,
-  Response,
-  ResponsePage,
-} from '../config/config'
+import { DefaultFetcher, Response, ResponsePage } from '../config/config'
 
 type Channel = {
   id: number
@@ -26,7 +21,7 @@ function ChannelList({ setChannelID }: ChannelListProps) {
   const [name, setName] = useState('')
 
   const { data, isLoading, error, mutate } = useSWR<ResponsePage<Channel>>(
-    Endpoint + '/channels?page_no=1&page_size=100',
+    '/channels?page_no=1&page_size=100',
     DefaultFetcher
   )
 
@@ -45,10 +40,9 @@ function ChannelList({ setChannelID }: ChannelListProps) {
       }),
     }
 
-    const res: Response<any> = await fetch(
-      Endpoint + '/channels',
-      options
-    ).then((res) => res.json())
+    const res: Response<any> = await fetch('/channels', options).then((res) =>
+      res.json()
+    )
 
     if (res.err !== '') {
       alert(res.err)
@@ -64,7 +58,7 @@ function ChannelList({ setChannelID }: ChannelListProps) {
     }
 
     const res: Response<any> = await fetch(
-      Endpoint + `/channels/${channel_id}`,
+      `/channels/${channel_id}`,
       options
     ).then((res) => res.json())
 

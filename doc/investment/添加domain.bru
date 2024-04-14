@@ -1,11 +1,17 @@
 meta {
   name: 添加domain
   type: http
-  seq: 4
+  seq: 2
 }
 
 post {
   url: http://localhost:10000/api/domains
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "name": "标普500"
+  }
 }

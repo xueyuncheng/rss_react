@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { DefaultFetcher, Endpoint, ResponsePage } from '../config/config'
+import { DefaultFetcher, ResponsePage } from '../config/config'
 import { useState } from 'react'
 
 export type StoryListProps = {
@@ -48,8 +48,7 @@ type PageProps = {
 
 function Page({ channel_id, page_no }: PageProps) {
   const { data, isLoading, error } = useSWR<ResponsePage<Story>>(
-    Endpoint +
-      `/stories?page_no=${page_no}&page_size=100&channel_id=${channel_id}`,
+    `/stories?page_no=${page_no}&page_size=100&channel_id=${channel_id}`,
     DefaultFetcher
   )
 
