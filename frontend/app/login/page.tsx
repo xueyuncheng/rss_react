@@ -1,13 +1,15 @@
 'use client'
 import React, { useState } from 'react'
 import { DefaultFetcher, Response } from '../config/config'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const Login = () => {
   const [name, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect_url = searchParams.get('redirect_url')
 
   const handleLogin = async () => {
     try {
@@ -30,7 +32,7 @@ const Login = () => {
       return
     }
 
-    router.push('asset')
+    router.push(redirect_url || '/')
   }
 
   return (

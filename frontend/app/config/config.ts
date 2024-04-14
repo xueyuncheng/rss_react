@@ -12,4 +12,10 @@ export type ResponsePage<T> = {
 }
 
 export const DefaultFetcher = (url: string, options?: any) =>
-  fetch('api' + url, options).then((res) => res.json())
+  fetch('api' + url, options).then((res) => {
+    if (res.status === 401) {
+      window.location.href = '/login?redirect_url=' + window.location.pathname
+      throw new Error('Unauthorized')
+    }
+    return res.json()
+  })
