@@ -62,7 +62,7 @@ const AssetList = ({ items }: { items: Asset[] }) => {
           </tr>
         </thead>
         <tbody>
-          {items.map((asset) => (
+          {[...items].reverse().map((asset) => (
             <tr key={asset.id}>
               <td className="text-center truncate">{asset.date}</td>
               <td className="text-center">{asset.money_yuan}</td>
