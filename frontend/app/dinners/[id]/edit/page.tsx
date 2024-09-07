@@ -1,5 +1,5 @@
 'use client'
-import { useGetDinner } from '@/api'
+import { useGetDinner } from '@/util'
 import DinnerForm from '@/components/DinnerForm'
 import { useParams } from 'next/navigation'
 import React from 'react'
