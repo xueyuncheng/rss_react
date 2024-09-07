@@ -34,10 +34,10 @@ func New(config *Config) error {
 	}
 
 	// run at every 5 minute
-	if _, err := b.cron.AddFunc("*/5 * * * *", b.bgUpdateStory); err != nil {
-		slog.Error("cron.AddFunc() error", "err", err)
-		return fmt.Errorf("cron.AddFunc() error, err = %w", err)
-	}
+	// if _, err := b.cron.AddFunc("*/5 * * * *", b.bgUpdateStory); err != nil {
+	// 	slog.Error("cron.AddFunc() error", "err", err)
+	// 	return fmt.Errorf("cron.AddFunc() error, err = %w", err)
+	// }
 	b.cron.Start()
 
 	db, err := database.New(config.Database)

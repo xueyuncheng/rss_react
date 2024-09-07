@@ -1,0 +1,19 @@
+meta {
+  name: 编辑
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://127.0.0.1:10000/api/night_snacks/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": 1,
+    "name": "吃村头的店",
+    "weight": 100
+  }
+}

@@ -41,6 +41,15 @@ func (b *Backend) route() error {
 		draw.DELETE("/:id", wrap(b.DeleteDraw))
 	}
 
+	nightSnack := api.Group("/night_snacks")
+	{
+		nightSnack.GET("", wrap(b.ListNightSnack))
+		nightSnack.GET("/:id", wrap(b.GetNightSnack))
+		nightSnack.POST("", wrap(b.AddNightSnack))
+		nightSnack.PUT("/:id", wrap(b.UpdateNightSnack))
+		nightSnack.DELETE("/:id", wrap(b.DeleteNightSnack))
+	}
+
 	api.Use(b.auth())
 
 	invest := api.Group("/investments")

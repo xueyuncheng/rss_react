@@ -68,3 +68,10 @@ type User struct {
 	Name     string
 	Password string
 }
+
+type NightSnack struct {
+	gorm.Model
+
+	Name   string
+	Weight int
+}
