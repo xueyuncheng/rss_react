@@ -1,5 +1,7 @@
 'use client'
-import { whatToEatDiner } from '@/util'
+import { Button } from '@/components/ui/button'
+import { api } from '@/util'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 type Props = {}
@@ -9,7 +11,7 @@ const Page = (props: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await whatToEatDiner()
+      const response = await api.whatToEatDiner()
       setValue(response.data.night_snack_name)
     }
 
@@ -17,8 +19,13 @@ const Page = (props: Props) => {
   }, [])
 
   return (
-    <div>
-      <div className="mx-auto mt-16 w-1/2 h-[64px] rounded-full border-2 border-gray-200 flex justify-center items-center">
+    <div className="mx-auto w-1/2 h-[64px] space-y-2">
+      <div className="flex justify-end">
+        <Link href="/dinners">
+          <Button>夜宵列表</Button>
+        </Link>
+      </div>
+      <div className=" rounded-full border-2 border-gray-200 flex justify-center items-center">
         <div className="text-center text-[32px] text-green-300">{value}</div>
       </div>
     </div>

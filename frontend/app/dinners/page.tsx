@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { deleteDinner, listDinner } from '@/util'
+import { api } from '@/util'
 import { Dinner } from '@/types'
 import {
   Table,
@@ -29,25 +29,25 @@ const Page = () => {
   const [dinners, setDinners] = useState<Dinner[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const pageSize = 10
-      setLoading(true)
-      const response = await listDinner(pageNo, pageSize)
-      setDinners(response.data.items)
-      setTotalPage(Math.ceil(response.data.total / pageSize))
-      setLoading(false)
-    }
+  const fetchData = async (pageNo: number) => {
+    const pageSize = 10
+    setLoading(true)
+    const response = await api.listDinner(pageNo, pageSize)
+    setDinners(response.data.items)
+    setTotalPage(Math.ceil(response.data.total / pageSize))
+    setLoading(false)
+  }
 
+  useEffect(() => {
     return () => {
-      fetchData()
+      fetchData(pageNo)
     }
   }, [pageNo])
 
   const onDeleteDinner = async (id: number) => {
     try {
-      await deleteDinner(id)
-      // mutate()
+      await api.deleteDinner(id)
+      fetchData(pageNo)
     } catch (error) {
       alert(error)
     }
@@ -55,7 +55,11 @@ const Page = () => {
 
   return (
     <div className="flex flex-col justify-center mx-auto w-1/2 space-y-4">
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-end space-x-2">
+        <Link href="/dinners/what_to_eat">
+          <Button>今天吃什么</Button>
+        </Link>
+
         <Link href="/dinners/create">
           <Button className="w-16">添加</Button>
         </Link>
@@ -82,7 +86,7 @@ const Page = () => {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{dinner.name}</TableCell>
                 <TableCell>{dinner.weight}</TableCell>
-                <TableCell className="flex justify-center space-x-4">
+                <TableCell className="flex justify-center space-x-2">
                   <Link href={`dinners/${dinner.id}/edit`}>
                     <Button>编辑</Button>
                   </Link>

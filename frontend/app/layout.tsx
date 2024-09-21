@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavigationMenu className="min-w-full flex justify-center items-center py-2 bg-blue-800 text-white text-4xl font-bold text-center">
+        <NavigationMenu className="min-w-full mb-4 flex justify-center items-center py-2 bg-blue-800 text-white text-4xl font-bold text-center">
           <NavigationMenuList>
             <NavigationMenuItem>
               {/* <Link href="/"> */}

@@ -1,19 +1,35 @@
 'use client'
-import { useGetDinner } from '@/util'
+import { api } from '@/util'
 import DinnerForm from '@/components/DinnerForm'
 import { useParams } from 'next/navigation'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { Dinner } from '@/types'
 
 type Props = {}
 
 const Page = (props: Props) => {
   const { id } = useParams<{ id: string }>()
+  const [dinner, setDinner] = useState<Dinner>()
+  const [loading, setLoading] = useState(true)
 
-  const { data, error, isLoading } = useGetDinner(Number(id))
-  if (error) return <div>Failed to load</div>
-  if (isLoading) return <div>Loading...</div>
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.getDinner(Number(id))
+        setDinner(response.data)
+      } catch (error) {
+        alert(error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  return <DinnerForm type="Update" dinner={data?.data} />
+    fetchData()
+  }, [id])
+
+  if (loading) return <div>Loading...</div>
+
+  return <DinnerForm type="Update" dinner={dinner} />
 }
 
 export default Page

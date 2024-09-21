@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Dinner } from '@/types'
-import { createDinner, updateDinner } from '@/util'
+import { api } from '@/util'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import Link from 'next/link'
 
 const formSchema = z.object({
   id: z.number(),
@@ -53,7 +54,7 @@ const DinnerForm = (props: Props) => {
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (props.type === 'Update') {
       try {
-        const res = await updateDinner(formData)
+        const res = await api.updateDinner(formData)
       } catch (error) {
         alert(error)
       }
@@ -61,7 +62,7 @@ const DinnerForm = (props: Props) => {
 
     if (props.type === 'Create') {
       try {
-        const res = await createDinner(formData)
+        const res = await api.createDinner(formData)
       } catch (error) {
         alert(error)
       }
@@ -99,14 +100,20 @@ const DinnerForm = (props: Props) => {
             <FormItem>
               <FormLabel>权重</FormLabel>
               <FormControl>
-                <Input {...field}></Input>
+                <Input {...field} type='number'></Input>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit">确定</Button>
+        {props.type === 'View' ? (
+          <Link href="/dinners">
+            <Button>返回</Button>
+          </Link>
+        ) : (
+          <Button type="submit">确定</Button>
+        )}
       </form>
     </Form>
   )
