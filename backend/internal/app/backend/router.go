@@ -48,6 +48,7 @@ func (b *Backend) route() error {
 		nightSnack.POST("", wrap(b.AddNightSnack))
 		nightSnack.PUT("/:id", wrap(b.UpdateNightSnack))
 		nightSnack.DELETE("/:id", wrap(b.DeleteNightSnack))
+		nightSnack.GET("/what_to_eat", wrap(b.WhatToEatNightSnack))
 	}
 
 	api.Use(b.auth())

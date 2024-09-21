@@ -75,3 +75,10 @@ type NightSnack struct {
 	Name   string
 	Weight int
 }
+
+type NightSnackChoice struct {
+	gorm.Model
+
+	NightSnackID   int
+	NightSnackName string
+}

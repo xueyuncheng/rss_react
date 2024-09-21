@@ -1,4 +1,4 @@
-import { Dinner } from '@/types'
+import { Dinner, WhatToEatDinner } from '@/types'
 import useSWR from 'swr'
 
 export type Response<T> = {
@@ -59,4 +59,8 @@ export async function updateDinner(dinner: Dinner): Promise<Response<any>> {
 
 export async function deleteDinner(id: number): Promise<Response<any>> {
   return fetcher(`/api/night_snacks/${id}`, 'DELETE')
+}
+
+export async function whatToEatDiner(): Promise<Response<WhatToEatDinner>> {
+  return fetcher('/api/night_snacks/what_to_eat')
 }

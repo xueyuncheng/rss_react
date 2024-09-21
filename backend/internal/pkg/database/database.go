@@ -3,8 +3,9 @@ package database
 import (
 	"fmt"
 	"log/slog"
+	"time"
 
-	"gorm.io/driver/postgres"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
@@ -24,9 +25,7 @@ type Database struct {
 }
 
 func New(config *Config) (*Database, error) {
-	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable TimeZone=Asia/Shanghai",
-		config.Host, config.Port, config.Username, config.Password, config.DBName)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
@@ -35,6 +34,16 @@ func New(config *Config) (*Database, error) {
 		slog.Error("gorm.Open() error", "err", err)
 		return nil, fmt.Errorf("gorm.Open() error, err = %w", err)
 	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		slog.Error("db.DB() error", "err", err)
+		return nil, fmt.Errorf("db.DB() error, err = %w", err)
+	}
+
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	database := &Database{
 		config: config,

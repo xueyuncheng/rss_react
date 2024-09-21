@@ -97,21 +97,21 @@ const Page = () => {
       </Table>
       <Pagination>
         <PaginationContent>
-          {pageNo > 1 ? (
+          {pageNo > 1 && (
             <PaginationItem>
               <PaginationPrevious
-                href={`/dinners?page_no=${pageNo - 1}`}
+                href={`?page_no=${pageNo - 1}`}
               ></PaginationPrevious>
             </PaginationItem>
-          ) : null}
+          )}
           <PaginationItem>{pageNo}</PaginationItem>
-          {pageNo < totalPage ? (
+          {pageNo < totalPage && (
             <PaginationItem>
               <PaginationNext
                 href={`/dinners?page_no=${pageNo + 1}`}
               ></PaginationNext>
             </PaginationItem>
-          ) : null}
+          )}
         </PaginationContent>
       </Pagination>
     </div>

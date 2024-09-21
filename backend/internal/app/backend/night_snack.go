@@ -3,10 +3,14 @@ package backend
 import (
 	"backend/internal/pkg/table"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/jinzhu/copier"
+	"github.com/mroth/weightedrand/v2"
+	"gorm.io/gorm"
 )
 
 type ListNightSnackReq struct {
@@ -133,4 +137,81 @@ func (b *Backend) DeleteNightSnack(ctx context.Context, req *DeleteNightSnackReq
 	}
 
 	return &DeleteNightSnackResp{}, nil
+}
+
+type WhatToEatNightSnackReq struct {
+}
+
+type WhatToEatNightSnackResp struct {
+	NightSnackID   int    `json:"night_snack_id"`
+	NightSnackName string `json:"night_snack_name"`
+}
+
+func (b *Backend) WhatToEatNightSnack(ctx context.Context, req *WhatToEatNightSnackReq) (*WhatToEatNightSnackResp, error) {
+	var choice *table.NightSnackChoice
+	if err := getTx(ctx).Where("created_at >= ?", time.Now().Format("2006-01-02 00:00:00")).
+		First(&choice).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+
+		slog.Error("tx.First() error", "err", err)
+		return nil, fmt.Errorf("tx.First() error, err = %w", err)
+	}
+
+	if choice.ID != 0 {
+		// 已成生成过夜宵选择了
+		var snack *table.NightSnack
+		if err := getTx(ctx).Where("id = ?", choice.NightSnackID).First(&snack).Error; err != nil {
+			slog.Error("tx.First() error", "err", err)
+			return nil, fmt.Errorf("tx.First() error, err = %w", err)
+		}
+
+		resp := &WhatToEatNightSnackResp{
+			NightSnackID:   int(snack.ID),
+			NightSnackName: snack.Name,
+		}
+
+		return resp, nil
+	}
+
+	// 还未生成过夜宵选择
+	snack, err := generateChoice(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("generateChoice() error, err = %w", err)
+	}
+
+	choice = &table.NightSnackChoice{
+		NightSnackID:   int(snack.ID),
+		NightSnackName: snack.Name,
+	}
+	if err := getTx(ctx).Create(choice).Error; err != nil {
+		slog.Error("tx.Create() error", "err", err)
+		return nil, fmt.Errorf("tx.Create() error, err = %w", err)
+	}
+
+	resp := &WhatToEatNightSnackResp{
+		NightSnackID:   int(snack.ID),
+		NightSnackName: snack.Name,
+	}
+
+	return resp, nil
+}
+
+func generateChoice(ctx context.Context) (*table.NightSnack, error) {
+	var snacks []*table.NightSnack
+	if err := getTx(ctx).Find(&snacks).Error; err != nil {
+		slog.Error("tx.Find() error", "err", err)
+		return nil, fmt.Errorf("tx.Find() error, err = %w", err)
+	}
+
+	choices := make([]weightedrand.Choice[*table.NightSnack, int], 0, len(snacks))
+	for _, snack := range snacks {
+		choice := weightedrand.NewChoice(snack, snack.Weight)
+		choices = append(choices, choice)
+	}
+	chooser, err := weightedrand.NewChooser(choices...)
+	if err != nil {
+		slog.Error("weightedrand.NewChooser() error", "err", err)
+		return nil, fmt.Errorf("weightedrand.NewChooser() error, err = %w", err)
+	}
+
+	return chooser.Pick(), nil
 }
