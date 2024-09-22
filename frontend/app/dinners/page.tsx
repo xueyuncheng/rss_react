@@ -56,13 +56,13 @@ const Page = () => {
   return (
     <div className="flex flex-col justify-center mx-auto w-1/2 space-y-4">
       <div className="flex justify-end space-x-2">
-        <Link href="/dinners/what_to_eat">
-          <Button>今天吃什么</Button>
-        </Link>
+        <Button asChild>
+          <Link href="/dinners/what_to_eat">今天吃什么</Link>
+        </Button>
 
-        <Link href="/dinners/create">
-          <Button className="w-16">添加</Button>
-        </Link>
+        <Button asChild>
+          <Link href="/dinners/create">添加</Link>
+        </Button>
       </div>
       <Table>
         <TableHeader>

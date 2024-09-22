@@ -6,8 +6,10 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 import { Toaster } from '@/components/ui/toaster'
+import Link from 'next/link'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,6 +17,11 @@ export const metadata: Metadata = {
   title: '薛运成的网站',
   description: '薛运成的网站',
 }
+
+const menus: { name: string; href: string }[] = [
+  { name: '夜宵功能', href: '/dinners' },
+  { name: 'RSS 功能', href: '/channel' },
+]
 
 export default function RootLayout({
   children,
@@ -24,19 +31,38 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavigationMenu className="min-w-full mb-4 flex justify-center items-center py-2 bg-blue-800 text-white text-4xl font-bold text-center">
+        <NavigationMenu className="mx-auto">
           <NavigationMenuList>
             <NavigationMenuItem>
-              {/* <Link href="/"> */}
-              <NavigationMenuLink href="/" className="hover:text-green-400">
-                欢迎来到 薛运成 的网站
-              </NavigationMenuLink>
-              {/* </Link> */}
+              <Link href="/" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  欢迎来到 薛运成 的网站
+                </NavigationMenuLink>
+              </Link>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
         <Toaster />
-        {children}
+
+        <div className="flex">
+          <NavigationMenu>
+            <NavigationMenuList className="flex-col">
+              {menus.map((menu) => (
+                <NavigationMenuItem key={menu.name}>
+                  <Link href={menu.href} legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      {menu.name}
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          {children}
+        </div>
       </body>
     </html>
   )
