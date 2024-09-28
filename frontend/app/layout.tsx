@@ -18,7 +18,13 @@ export const metadata: Metadata = {
   description: '薛运成的网站',
 }
 
-const menus: { name: string; href: string }[] = [
+type Menu = {
+  name: string
+  href: string
+}
+
+const menus: Menu[] = [
+  { name: '首页', href: '/' },
   { name: '夜宵功能', href: '/dinners' },
   { name: 'RSS 功能', href: '/channel' },
 ]
@@ -31,38 +37,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavigationMenu className="mx-auto">
+        <NavigationMenu className='mb-8'>
           <NavigationMenuList>
-            <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  欢迎来到 薛运成 的网站
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
+            {menus.map((menu) => (
+              <NavigationMenuItem key={menu.href}>
+                <Link href={menu.href} legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    {menu.name}
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
+
         <Toaster />
 
-        <div className="flex">
-          <NavigationMenu>
-            <NavigationMenuList className="flex-col">
-              {menus.map((menu) => (
-                <NavigationMenuItem key={menu.name}>
-                  <Link href={menu.href} legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      {menu.name}
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          {children}
-        </div>
+        <div className="flex justify-center">{children}</div>
       </body>
     </html>
   )

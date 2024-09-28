@@ -1,9 +1,11 @@
 'use client'
 import { api } from '@/util'
 import DinnerForm from '@/components/DinnerForm'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Dinner } from '@/types'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 type Props = {}
 
@@ -11,6 +13,8 @@ const Page = (props: Props) => {
   const { id } = useParams<{ id: string }>()
   const [dinner, setDinner] = useState<Dinner>()
   const [loading, setLoading] = useState(true)
+
+  const pathname = usePathname()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +37,11 @@ const Page = (props: Props) => {
 
   return (
     <div>
+      <div className="flex justify-end">
+        <Button asChild>
+          <Link href={`${pathname}/edit`}>编辑</Link>
+        </Button>
+      </div>
       <DinnerForm type="View" dinner={dinner} />
     </div>
   )

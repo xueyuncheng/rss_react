@@ -23,7 +23,7 @@ import Link from 'next/link'
 const formSchema = z.object({
   id: z.number(),
   name: z.string().min(1, { message: '名称不能为空' }),
-  weight: z.number().int().min(1, { message: '权重必须大于0' }),
+  weight: z.coerce.number().int().min(1, { message: '权重必须大于0' }),
 })
 
 type Props = {

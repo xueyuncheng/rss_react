@@ -4,15 +4,12 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { api } from '@/util'
 import { Dinner } from '@/types'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+
 import { Button } from '@/components/ui/button'
+
+import { usePathname, useSearchParams } from 'next/navigation'
+import { DataTable } from '@/app/dinners/data-table'
+import { columns } from '@/app/dinners/columns'
 import {
   Pagination,
   PaginationContent,
@@ -20,102 +17,73 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { useSearchParams } from 'next/navigation'
+
+import { util } from '@/util/util'
 
 const Page = () => {
+  const pathname = usePathname()
   const searchParams = useSearchParams()
-  const pageNo = Number(searchParams.get('page_no')) || 1
-  const [totalPage, setTotalPage] = useState(0)
-  const [dinners, setDinners] = useState<Dinner[]>([])
-  const [loading, setLoading] = useState(false)
 
-  const fetchData = async (pageNo: number) => {
-    const pageSize = 10
-    setLoading(true)
-    const response = await api.listDinner(pageNo, pageSize)
-    setDinners(response.data.items)
-    setTotalPage(Math.ceil(response.data.total / pageSize))
-    setLoading(false)
-  }
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [dinners, setDinners] = useState<Dinner[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const pageNo = Number(searchParams.get('page_no')) || 1
+  const pageSize = Number(searchParams.get('page_size')) || 10
 
   useEffect(() => {
+    const fetchData = async (pageNo: number) => {
+      setLoading(true)
+      const response = await api.listDinner(pageNo, pageSize)
+      setDinners(response.data.items)
+      setTotal(response.data.total)
+      setTotalPages(Math.ceil(response.data.total / pageSize))
+      setLoading(false)
+    }
+
     return () => {
       fetchData(pageNo)
     }
-  }, [pageNo])
+  }, [pageNo, pageSize])
 
-  const onDeleteDinner = async (id: number) => {
-    try {
-      await api.deleteDinner(id)
-      fetchData(pageNo)
-    } catch (error) {
-      alert(error)
-    }
+  if (loading) {
+    return <div>Loading...</div>
   }
 
   return (
-    <div className="flex flex-col justify-center mx-auto w-1/2 space-y-4">
-      <div className="flex justify-end space-x-2">
+    <div className="w-1/2 flex-col space-y-2">
+      <div className="flex justify-end mb-2 space-x-2">
         <Button asChild>
-          <Link href="/dinners/what_to_eat">今天吃什么</Link>
+          <Link href="/dinners/create">新建</Link>
         </Button>
-
         <Button asChild>
-          <Link href="/dinners/create">添加</Link>
+          <Link href="/dinners/what_to_eat">今晚吃什么</Link>
         </Button>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>序号</TableHead>
-            <TableHead>名称</TableHead>
-            <TableHead>权重</TableHead>
-            <TableHead className="text-center">操作</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center">
-                正在加载数据...
-              </TableCell>
-            </TableRow>
-          ) : (
-            dinners.map((dinner, index) => (
-              <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{dinner.name}</TableCell>
-                <TableCell>{dinner.weight}</TableCell>
-                <TableCell className="flex justify-center space-x-2">
-                  <Link href={`dinners/${dinner.id}/edit`}>
-                    <Button>编辑</Button>
-                  </Link>
-                  <Button onClick={() => onDeleteDinner(dinner.id)}>
-                    删除
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+
+      <DataTable columns={columns} data={dinners} total={total} />
+
       <Pagination>
         <PaginationContent>
-          {pageNo > 1 && (
-            <PaginationItem>
-              <PaginationPrevious
-                href={`?page_no=${pageNo - 1}`}
-              ></PaginationPrevious>
-            </PaginationItem>
-          )}
-          <PaginationItem>{pageNo}</PaginationItem>
-          {pageNo < totalPage && (
-            <PaginationItem>
-              <PaginationNext
-                href={`/dinners?page_no=${pageNo + 1}`}
-              ></PaginationNext>
-            </PaginationItem>
-          )}
+          <PaginationItem>
+            <PaginationPrevious
+              href={
+                pageNo > 1
+                  ? util.createPageURL(pathname, searchParams, pageNo - 1)
+                  : '#'
+              }
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext
+              href={
+                pageNo < totalPages
+                  ? util.createPageURL(pathname, searchParams, pageNo + 1)
+                  : '#'
+              }
+            />
+          </PaginationItem>
         </PaginationContent>
       </Pagination>
     </div>

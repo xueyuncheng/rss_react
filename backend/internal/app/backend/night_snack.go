@@ -158,15 +158,9 @@ func (b *Backend) WhatToEatNightSnack(ctx context.Context, req *WhatToEatNightSn
 
 	if choice.ID != 0 {
 		// 已成生成过夜宵选择了
-		var snack *table.NightSnack
-		if err := getTx(ctx).Where("id = ?", choice.NightSnackID).First(&snack).Error; err != nil {
-			slog.Error("tx.First() error", "err", err)
-			return nil, fmt.Errorf("tx.First() error, err = %w", err)
-		}
-
 		resp := &WhatToEatNightSnackResp{
-			NightSnackID:   int(snack.ID),
-			NightSnackName: snack.Name,
+			NightSnackID:   choice.NightSnackID,
+			NightSnackName: choice.NightSnackName,
 		}
 
 		return resp, nil
