@@ -12,8 +12,15 @@ import {
 } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
 import { api } from '@/util'
+import { TableCell } from '@/components/ui/table'
 
 export const columns: ColumnDef<Dinner>[] = [
+  {
+    header: '序号',
+    cell: ({ row }) => {
+      return <TableCell>{row.index + 1}</TableCell>
+    },
+  },
   {
     accessorKey: 'name',
     header: '名称',

@@ -33,7 +33,7 @@ const Page = () => {
   const pageSize = Number(searchParams.get('page_size')) || 10
 
   useEffect(() => {
-    const fetchData = async (pageNo: number) => {
+    const fetchData = async () => {
       setLoading(true)
       const response = await api.listDinner(pageNo, pageSize)
       setDinners(response.data.items)
@@ -43,9 +43,9 @@ const Page = () => {
     }
 
     return () => {
-      fetchData(pageNo)
+      fetchData()
     }
-  }, [pageNo, pageSize])
+  }, [])
 
   if (loading) {
     return <div>Loading...</div>
