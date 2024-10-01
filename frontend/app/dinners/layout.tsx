@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '今晚吃什么',
-  description: '今晚吃什么',
+  title: '夜宵功能',
 }
 
 export default function RootLayout({
