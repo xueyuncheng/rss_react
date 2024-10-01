@@ -9,3 +9,8 @@ services:
       - POSTGRES_DB=rss
     ports:
       - 5432:5432
+  backend:
+    image: rsshub-backend:v1.0.0
+    restart: always
+    ports:
+      - 10000:10000
