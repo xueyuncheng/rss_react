@@ -9,5 +9,5 @@ const createPageURL = (
 }
 
 export const util = {
-    createPageURL: createPageURL,
+  createPageURL: createPageURL,
 }

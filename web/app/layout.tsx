@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Toaster } from '@/components/ui/toaster'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,6 +29,7 @@ const menus: Menu[] = [
   { name: '夜宵功能', href: '/dinners' },
   { name: 'RSS 功能', href: '/channel' },
   { name: '密码生成', href: '/password' },
+  { name: 'Podcast', href: '/podcasts' },
 ]
 
 export default function RootLayout({
@@ -37,8 +39,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <NavigationMenu className='mb-8'>
+      <body className={cn(inter.className, 'flex flex-col gap-2')}>
+        <NavigationMenu>
           <NavigationMenuList>
             {menus.map((menu) => (
               <NavigationMenuItem key={menu.href}>
@@ -54,7 +56,11 @@ export default function RootLayout({
 
         <Toaster />
 
-        <div className="flex justify-center">{children}</div>
+        <div className="flex">
+          <div className="flex-none w-1/6"></div>
+          <div className="flex-1 flex justify-center">{children}</div>
+          <div className="flex-none w-1/6"></div>
+        </div>
       </body>
     </html>
   )

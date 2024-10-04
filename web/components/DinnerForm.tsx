@@ -100,7 +100,7 @@ const DinnerForm = (props: Props) => {
             <FormItem>
               <FormLabel>权重</FormLabel>
               <FormControl>
-                <Input {...field} type='number'></Input>
+                <Input {...field} type="number"></Input>
               </FormControl>
               <FormMessage />
             </FormItem>

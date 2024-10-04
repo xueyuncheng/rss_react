@@ -9,7 +9,6 @@ type Props = {}
 
 const Password = (props: Props) => {
   const [password, setPassword] = useState('')
-  const [copied, setCopied] = useState(false)
 
   const generateRandomPassword = () => {
     const length = 16

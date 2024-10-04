@@ -45,7 +45,7 @@ const Page = () => {
     return () => {
       fetchData()
     }
-  }, [])
+  }, [pageNo, pageSize])
 
   if (loading) {
     return <div>Loading...</div>
