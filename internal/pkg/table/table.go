@@ -82,3 +82,23 @@ type NightSnackChoice struct {
 	NightSnackID   int
 	NightSnackName string
 }
+
+type PodcastShow struct {
+	gorm.Model
+
+	Name        string
+	Address     string
+	PublishedAt time.Time
+	ImageURL    string
+}
+
+type PodcastEpisode struct {
+	gorm.Model
+
+	Name         string
+	ShowID       int
+	ShowName     string
+	EnclosureURL string
+	GUID         string
+	PublishedAt  time.Time
+}

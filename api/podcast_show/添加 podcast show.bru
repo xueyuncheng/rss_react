@@ -1,0 +1,17 @@
+meta {
+  name: 添加 podcast show
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://{{HOST}}/api/podcasts/shows
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "address": "https://podcasts.files.bbci.co.uk/p02nq0gn.rss"
+  }
+}

@@ -51,6 +51,21 @@ func (b *Backend) route() error {
 		nightSnack.GET("/what_to_eat", wrap(b.WhatToEatNightSnack))
 	}
 
+	podcast := api.Group("/podcasts")
+	{
+		show := podcast.Group("/shows")
+		{
+			show.GET("", wrap(b.ListShow))
+			show.POST("", wrap(b.AddShow))
+			show.DELETE("/:id", wrap(b.DeleteShow))
+		}
+
+		episode := podcast.Group("/episodes")
+		{
+			episode.GET("", wrap(b.ListPodcastEpisode))
+		}
+	}
+
 	api.Use(b.auth())
 
 	invest := api.Group("/investments")

@@ -16,6 +16,8 @@ func (b *Backend) migrate() error {
 		&table.User{},
 		&table.NightSnack{},
 		&table.NightSnackChoice{},
+		&table.PodcastShow{},
+		&table.PodcastEpisode{},
 	); err != nil {
 		slog.Error("b.db.AutoMigrate() error", "err", err)
 	}
