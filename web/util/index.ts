@@ -1,4 +1,4 @@
-import { Dinner, WhatToEatDinner } from '@/types'
+import { Dinner, WhatToEatDinner, PodcastShow, PodcastEpisode } from '@/types'
 
 export type Response<T> = {
   err: string
@@ -60,11 +60,30 @@ async function whatToEatDinner(): Promise<Response<WhatToEatDinner>> {
   return fetcher('/api/night_snacks/what_to_eat')
 }
 
+async function listPodcastShow(
+  pageNo: number,
+  pageSize: number
+): Promise<ResponseWithPage<PodcastShow>> {
+  return fetcher(`/api/podcasts/shows?page_no=${pageNo}&page_size=${pageSize}`)
+}
+
+async function listPodcastEpisode(
+  pageNo: number,
+  pageSize: number,
+  showID: number
+): Promise<ResponseWithPage<PodcastEpisode>> {
+  return fetcher(
+    `/api/podcasts/episodes?page_no=${pageNo}&page_size=${pageSize}&show_id=${showID}`
+  )
+}
+
 export const api = {
   listDinner,
   getDinner,
   createDinner,
   updateDinner,
   deleteDinner,
-  whatToEatDiner: whatToEatDinner,
+  whatToEatDinner,
+  listPodcastShow,
+  listPodcastEpisode,
 }

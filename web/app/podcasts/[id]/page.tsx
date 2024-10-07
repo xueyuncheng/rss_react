@@ -1,6 +1,6 @@
 'use client'
 import { Label } from '@/components/ui/label'
-import { Podcast } from '@/types'
+import { PodcastShow } from '@/types'
 import React, { useState } from 'react'
 
 import { z } from 'zod'
@@ -27,16 +27,16 @@ const formSchema = z.object({
 })
 
 const Page = () => {
-  const initialPodcast: Podcast = {
+  const initialPodcast: PodcastShow = {
     id: 0,
-    title: 'Tech Talks: Exploring the Future',
+    name: 'Tech Talks: Exploring the Future',
     description:
       'A comprehensive podcast that delves into the intricacies of modern technology, exploring the latest trends, innovations, and insights from industry experts. Each episode features in-depth discussions, interviews, and analyses that cater to tech enthusiasts, professionals, and anyone interested in the ever-evolving world of technology. Join us as we uncover the stories behind the tech that shapes our lives and the future.',
     image_url: 'xx',
     updated_at: '',
   }
 
-  const [podcast, setPodcast] = useState<Podcast>(initialPodcast)
+  const [podcast, setPodcast] = useState<PodcastShow>(initialPodcast)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

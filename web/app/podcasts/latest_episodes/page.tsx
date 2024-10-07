@@ -1,6 +1,6 @@
 'use client'
 import { PodcastEpisode } from '@/types'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DataTable } from './data-table'
 import { columns } from './column'
 import {
@@ -12,45 +12,34 @@ import {
 } from '@/components/ui/pagination'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { util } from '@/util/util'
-
-const episodesData: PodcastEpisode[] = [
-  {
-    id: 1,
-    title: 'Episode 1',
-    description: 'Description for episode 1',
-    published_at: '2023-10-01',
-    duration: '30:00',
-    audio_url: 'https://example.com/episode1.mp3',
-  },
-  {
-    id: 2,
-    title: 'Episode 2',
-    description: 'Description for episode 2',
-    published_at: '2023-10-08',
-    duration: '45:00',
-    audio_url: 'https://example.com/episode2.mp3',
-  },
-  {
-    id: 3,
-    title: 'Episode 3',
-    description: 'Description for episode 3',
-    published_at: '2023-10-15',
-    duration: '50:00',
-    audio_url: 'https://example.com/episode3.mp3',
-  },
-]
+import { api } from '@/util'
 
 const Page = () => {
-  const [episodes, setEpisodes] = useState<PodcastEpisode[]>(episodesData)
+  const [episodes, setEpisodes] = useState<PodcastEpisode[]>([])
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const pageNo = Number(searchParams.get('page_no')) || 1
   const pageSize = Number(searchParams.get('page_size')) || 10
+  const showID = Number(searchParams.get('show_id')) || 0
 
-  const total = episodes.length
   const totalPages = Math.ceil(total / pageSize)
+
+  useEffect(() => {
+    setLoading(true)
+    api.listPodcastEpisode(pageNo, pageSize, showID).then((data) => {
+      setEpisodes(data.data.items)
+      setTotal(data.data.total)
+    })
+    setLoading(false)
+  }, [pageNo, pageSize, showID])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="w-full flex flex-col gap-2">

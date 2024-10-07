@@ -11,7 +11,7 @@ const Page = (props: Props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await api.whatToEatDiner()
+      const response = await api.whatToEatDinner()
       setValue(response.data.night_snack_name)
     }
 

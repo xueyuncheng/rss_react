@@ -123,6 +123,11 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 			enclosureURL = item.Enclosures[0].URL
 		}
 
+		var duration string
+		if item.ITunesExt != nil {
+			duration = item.ITunesExt.Duration
+		}
+
 		episode := &table.PodcastEpisode{
 			Name:         item.Title,
 			ShowID:       int(show.ID),
@@ -130,6 +135,7 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 			EnclosureURL: enclosureURL,
 			GUID:         item.GUID,
 			PublishedAt:  publishedAt,
+			Duration:     duration,
 		}
 		episodes = append(episodes, episode)
 	}

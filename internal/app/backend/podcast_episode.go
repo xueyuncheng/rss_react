@@ -18,6 +18,7 @@ type PodcastEpisode struct {
 	EnclosureURL string    `json:"enclosure_url"`
 	GUID         string    `json:"guid"`
 	PublishedAt  time.Time `json:"published_at"`
+	Duration     string    `json:"duration"`
 }
 
 type ListPodcastEpisodeReq struct {

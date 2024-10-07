@@ -9,9 +9,9 @@ export type WhatToEatDinner = {
   night_snack_name: string
 }
 
-export type Podcast = {
+export type PodcastShow = {
   id: number
-  title: string
+  name: string
   description: string
   image_url: string
   updated_at: string
@@ -19,9 +19,9 @@ export type Podcast = {
 
 export type PodcastEpisode = {
   id: number
-  title: string
+  name: string
   description: string
-  audio_url: string
+  enclosure_url: string
   published_at: string
   duration: string
 }

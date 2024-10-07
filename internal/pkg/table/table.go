@@ -101,4 +101,5 @@ type PodcastEpisode struct {
 	EnclosureURL string
 	GUID         string
 	PublishedAt  time.Time
+	Duration     string
 }

@@ -1,6 +1,6 @@
 'use client'
-import React, { useState } from 'react'
-import { Podcast } from '@/types'
+import React, { useEffect, useState } from 'react'
+import { PodcastShow } from '@/types'
 import {
   Card,
   CardContent,
@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/card'
 
 import Image from 'next/image'
-import pic from './economist.jpeg'
 import {
   Pagination,
   PaginationContent,
@@ -23,52 +22,32 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { util } from '@/util/util'
 import Link from 'next/link'
 
-const podcastsData = [
-  {
-    id: 1,
-    title: 'The Joe Rogan Experience',
-    description: 'The Joe Rogan Experience podcast',
-    image_url: 'https://via.placeholder.com/150',
-    updated_at: '2021-10-01',
-  },
-  {
-    id: 2,
-    title: 'Serial',
-    description: 'Serial podcast',
-    image_url: 'https://via.placeholder.com/150',
-    updated_at: '2021-09-15',
-  },
-  {
-    id: 3,
-    title: 'Radiolab',
-    description: 'Radiolab podcast',
-    image_url: 'https://via.placeholder.com/150',
-    updated_at: '2021-08-20',
-  },
-  {
-    id: 4,
-    title: 'The Daily',
-    description: 'The Daily podcast',
-    image_url: 'https://via.placeholder.com/150',
-    updated_at: '2021-07-30',
-  },
-  {
-    id: 5,
-    title: 'Stuff You Should Know',
-    description: 'Stuff You Should Know podcast',
-    image_url: 'https://via.placeholder.com/150',
-    updated_at: '2021-06-25',
-  },
-]
+import { api } from '@/util/'
+
+import { formatDistanceToNow } from 'date-fns'
 
 const Grid = () => {
-  const [podcasts, setPodcasts] = useState<Podcast[]>(podcastsData)
+  const [podcasts, setPodcasts] = useState<PodcastShow[]>([])
+  const [loading, setLoading] = useState(true)
 
   const searchParams = useSearchParams()
   const pageNo = Number(searchParams.get('page_no')) || 1
   const pageSize = Number(searchParams.get('page_size')) || 10
+  const showID = Number(searchParams.get('show_id')) || 0
   const totalPage = Math.ceil(podcasts.length / pageSize)
   const pathname = usePathname()
+
+  useEffect(() => {
+    setLoading(true)
+    api.listPodcastShow(pageNo, pageSize).then((data) => {
+      setPodcasts(data.data.items)
+    })
+    setLoading(false)
+  }, [pageNo, pageSize, showID])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="flex-1 flex flex-col gap-4">
@@ -78,8 +57,8 @@ const Grid = () => {
             <Card className="h-128 w-64 transform transition-transform duration-300 hover:scale-105">
               <CardHeader>
                 <CardTitle>
-                  <Link href={`/podcasts/${podcast.id}`} title={podcast.title}>
-                    {podcast.title}
+                  <Link href={`/podcasts/${podcast.id}`} title={podcast.name}>
+                    {podcast.name}
                   </Link>
                 </CardTitle>
                 <CardDescription
@@ -90,17 +69,21 @@ const Grid = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href={`/podcasts/${podcast.id}`}>
-                  <Image
-                    src={pic}
-                    alt={podcast.title}
+                <Link href={`/podcasts/latest_episodes?show_id=${podcast.id}`}>
+                  <img
+                    src={podcast.image_url}
+                    alt={podcast.name}
                     height={240}
                     width={240}
                   />
                 </Link>
               </CardContent>
               <CardFooter>
-                <p>{podcast.updated_at}</p>
+                <p>
+                  {formatDistanceToNow(new Date(podcast.updated_at), {
+                    addSuffix: true,
+                  })}
+                </p>
               </CardFooter>
             </Card>
           </div>
