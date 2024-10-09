@@ -11,6 +11,7 @@ import {
 import { Toaster } from '@/components/ui/toaster'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { Suspense } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +28,6 @@ type Menu = {
 const menus: Menu[] = [
   { name: '首页', href: '/' },
   { name: '夜宵功能', href: '/dinners' },
-  { name: 'RSS 功能', href: '/channel' },
   { name: '密码生成', href: '/password' },
   { name: 'Podcast', href: '/podcasts' },
 ]
@@ -56,11 +56,13 @@ export default function RootLayout({
 
         <Toaster />
 
-        <div className="flex">
-          <div className="flex-none w-1/6"></div>
-          <div className="flex-1 flex justify-center">{children}</div>
-          <div className="flex-none w-1/6"></div>
-        </div>
+        <Suspense>
+          <div className="flex">
+            <div className="flex-none w-1/6"></div>
+            <div className="flex-1 flex justify-center">{children}</div>
+            <div className="flex-none w-1/6"></div>
+          </div>
+        </Suspense>
       </body>
     </html>
   )

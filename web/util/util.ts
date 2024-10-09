@@ -1,13 +1,15 @@
+import { ReadonlyURLSearchParams } from 'next/navigation'
+
 const createPageURL = (
   pathname: string,
-  searchParams: URLSearchParams,
+  searchParams: ReadonlyURLSearchParams,
   pageNumber: number | string
-) => {
-  const params = new URLSearchParams(searchParams)
+): string => {
+  const params = new URLSearchParams(searchParams.toString())
   params.set('page_no', pageNumber.toString())
   return `${pathname}?${params.toString()}`
 }
 
 export const util = {
-  createPageURL: createPageURL,
+  createPageURL,
 }
