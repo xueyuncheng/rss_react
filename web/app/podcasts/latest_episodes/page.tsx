@@ -50,11 +50,7 @@ const Page = () => {
             <PaginationPrevious
               href={
                 pageNo > 1
-                  ? util.createPageURL(
-                      pathname,
-                      new URLSearchParams(searchParams.toString()),
-                      pageNo - 1
-                    )
+                  ? util.createPageURL(pathname, searchParams, pageNo - 1)
                   : '#'
               }
             />
@@ -63,11 +59,7 @@ const Page = () => {
             <PaginationNext
               href={
                 pageNo < totalPages
-                  ? util.createPageURL(
-                      pathname,
-                      new URLSearchParams(searchParams.toString()),
-                      pageNo + 1
-                    )
+                  ? util.createPageURL(pathname, searchParams, pageNo + 1)
                   : '#'
               }
             />

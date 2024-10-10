@@ -1,16 +1,27 @@
 version: "3.1"
 services:
+  frontend:
+    image: rsshub-frontend:v1.0.0
+    restart: always
+    volumes:
+      - Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+    ports:
+      - 80:80
+      - 443:443
+
+  backend:
+    image: rsshub-backend:v1.0.0
+    restart: always
+
   db:
     image: postgres:16
     restart: always
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=helloworld
+      - POSTGRES_PASSWORD=k;Mb(#XQoQ!_Ez0M
       - POSTGRES_DB=rss
-    ports:
-      - 5432:5432
-  backend:
-    image: rsshub-backend:v1.0.0
-    restart: always
-    ports:
-      - 10000:10000
+
+volumes:
+  caddy_data:
+    external: true

@@ -95,11 +95,7 @@ const Grid = () => {
             <PaginationPrevious
               href={
                 pageNo > 1
-                  ? util.createPageURL(
-                      pathname,
-                      new URLSearchParams(searchParams.toString()),
-                      pageNo - 1
-                    )
+                  ? util.createPageURL(pathname, searchParams, pageNo - 1)
                   : '#'
               }
             />
@@ -108,11 +104,7 @@ const Grid = () => {
             <PaginationNext
               href={
                 pageNo < totalPage
-                  ? util.createPageURL(
-                      pathname,
-                      new URLSearchParams(searchParams.toString()),
-                      pageNo + 1
-                    )
+                  ? util.createPageURL(pathname, searchParams, pageNo + 1)
                   : '#'
               }
             />
