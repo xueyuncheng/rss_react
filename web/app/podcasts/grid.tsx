@@ -70,8 +70,8 @@ const Grid = () => {
               </CardHeader>
               <CardContent>
                 <Link href={`/podcasts/latest_episodes?show_id=${podcast.id}`}>
-                  <img
-                    src={podcast.image_url}
+                  <Image
+                    src={`/api/files/${podcast.image_object_name}`}
                     alt={podcast.name}
                     height={240}
                     width={240}

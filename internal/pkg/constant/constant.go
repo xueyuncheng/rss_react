@@ -1,5 +1,7 @@
 package constant
 
+const MinioBucketName = "files"
+
 type Env string
 
 const (

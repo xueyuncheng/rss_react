@@ -5,5 +5,10 @@ database:
   host: 127.0.0.1
   port: 5432
   username: postgres
-  password: helloworld
+  password: k;Mb(#XQoQ!_Ez0M
   db_name: rss
+
+minio:
+  endpoint: 127.0.0.1:9000
+  access_key_id: admin
+  secret_access_key: LfvU9~Ps%ef+f4r
