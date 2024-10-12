@@ -14,6 +14,7 @@ export type PodcastShow = {
   name: string
   description: string
   image_url: string
+  image_object_name: string
   updated_at: string
 }
 

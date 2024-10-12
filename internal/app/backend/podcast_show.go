@@ -16,11 +16,12 @@ import (
 )
 
 type Show struct {
-	ID        int       `json:"id"`
-	Name      string    `json:"name"`
-	Address   string    `json:"address"`
-	UpdatedAt time.Time `json:"updated_at"`
-	ImageURL  string    `json:"image_url"`
+	ID              int       `json:"id"`
+	Name            string    `json:"name"`
+	Address         string    `json:"address"`
+	UpdatedAt       time.Time `json:"updated_at"`
+	ImageURL        string    `json:"image_url"`
+	ImageObjectName string    `json:"image_object_name"`
 }
 
 type ListShowReq struct {
