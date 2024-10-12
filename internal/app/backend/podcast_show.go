@@ -178,7 +178,7 @@ func downloadImage(ctx context.Context, address string, mc *minio.Client) (strin
 	}
 	defer resp.Body.Close()
 
-	filename := path.Base(address)
+	filename := path.Base(resp.Request.URL.Path)
 	objectName := getMinioObjectName(filename)
 	options := minio.PutObjectOptions{
 		ContentType: resp.Header.Get("Content-Type"),
