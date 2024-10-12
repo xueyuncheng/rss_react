@@ -1,0 +1,6 @@
+{
+    "go.toolsEnvVars": {
+        "GOOS": "darwin",
+        "GOPROXY": "https://goproxy.cn"
+    }
+}

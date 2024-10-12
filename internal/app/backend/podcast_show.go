@@ -1,13 +1,17 @@
 package backend
 
 import (
+	"backend/internal/pkg/constant"
 	"backend/internal/pkg/table"
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
+	"path"
 	"time"
 
 	"github.com/jinzhu/copier"
+	"github.com/minio/minio-go/v7"
 	"github.com/mmcdole/gofeed"
 )
 
@@ -94,16 +98,23 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 		publishedAt = *feed.PublishedParsed
 	}
 
-	var imageURL string
+	var imageURL, imageObjectName string
 	if feed.Image != nil {
 		imageURL = feed.Image.URL
+
+		var err error
+		imageObjectName, err = downloadImage(ctx, imageURL, b.minio)
+		if err != nil {
+			return nil, fmt.Errorf("downloadImage() error, err = %w", err)
+		}
 	}
 
 	show := &table.PodcastShow{
-		Name:        feed.Title,
-		Address:     req.Address,
-		PublishedAt: publishedAt,
-		ImageURL:    imageURL,
+		Name:            feed.Title,
+		Address:         req.Address,
+		PublishedAt:     publishedAt,
+		ImageURL:        imageURL,
+		ImageObjectName: imageObjectName,
 	}
 
 	if err := getTx(ctx).Create(show).Error; err != nil {
@@ -150,6 +161,33 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 	}
 
 	return &AddShowResp{}, nil
+}
+
+func downloadImage(ctx context.Context, address string, mc *minio.Client) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, address, nil)
+	if err != nil {
+		slog.Error("http.NewRequestWithContext() error", "err", err)
+		return "", fmt.Errorf("http.NewRequestWithContext() error, err = %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		slog.Error("http.Get() error", "err", err)
+		return "", fmt.Errorf("http.Get() error, err = %w", err)
+	}
+	defer resp.Body.Close()
+
+	filename := path.Base(address)
+	objectName := getMinioObjectName(filename)
+	options := minio.PutObjectOptions{
+		ContentType: resp.Header.Get("Content-Type"),
+	}
+	if _, err := mc.PutObject(ctx, constant.MinioBucketName, objectName, resp.Body, resp.ContentLength, options); err != nil {
+		slog.Error("minio.PutObject() error", "err", err)
+		return "", fmt.Errorf("minio.PutObject() error, err = %w", err)
+	}
+
+	return objectName, nil
 }
 
 type DeleteShowReq struct {

@@ -20,6 +20,11 @@ func (b *Backend) route() error {
 
 	api.POST("/login", wrap(b.Login))
 
+	file := api.Group("/files")
+	{
+		file.GET("/*id", b.GetFile)
+	}
+
 	channel := api.Group("/channels")
 	{
 		channel.GET("", wrap(b.ListChannel))
@@ -139,5 +144,37 @@ func wrap[T1, T2 any](f func(context.Context, *T1) (*T2, error)) gin.HandlerFunc
 		}
 
 		ctx.JSON(http.StatusOK, Response{Data: resp})
+	}
+}
+
+func wrapFile[T any](f func(*gin.Context, *T) error) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		req := new(T)
+		var err error
+
+		// 如果请求体长度不超过2("{}")，并且path的最后一部分segment是以":"开头的，
+		// 则可以推断出为 GET /:id 或者 DELETE /:id 这种模式，使用ctx.ShouldBindUri()
+
+		paths := strings.Split(ctx.FullPath(), "/")
+		if ctx.Request.ContentLength <= 2 && strings.HasPrefix(paths[len(paths)-1], ":") {
+			err = ctx.ShouldBindUri(req)
+		} else {
+			err = ctx.ShouldBind(req)
+		}
+		if err != nil {
+			slog.Error("ctx.ShouldBind() error", "err", err)
+			ctx.JSON(http.StatusOK, Response{Err: err.Error()})
+			ctx.Abort()
+			return
+		}
+
+		if err := f(ctx, req); err != nil {
+			ctx.Set(ctxIsOK, false)
+
+			ctx.JSON(http.StatusOK, Response{Err: err.Error()})
+
+			ctx.Abort()
+			return
+		}
 	}
 }

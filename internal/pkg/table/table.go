@@ -86,10 +86,11 @@ type NightSnackChoice struct {
 type PodcastShow struct {
 	gorm.Model
 
-	Name        string
-	Address     string
-	PublishedAt time.Time
-	ImageURL    string
+	Name            string
+	Address         string
+	PublishedAt     time.Time
+	ImageURL        string
+	ImageObjectName string
 }
 
 type PodcastEpisode struct {
