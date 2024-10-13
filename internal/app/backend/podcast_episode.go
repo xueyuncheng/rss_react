@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jinzhu/copier"
@@ -50,10 +52,20 @@ func (b *Backend) ListPodcastEpisode(ctx context.Context, req *ListPodcastEpisod
 		return nil, fmt.Errorf("tx.Count() error, err = %w", err)
 	}
 
-	var items []*PodcastEpisode
-	if err := copier.Copy(&items, episodes); err != nil {
-		slog.Error("copier.Copy() error", "err", err)
-		return nil, fmt.Errorf("copier.Copy() error, err = %w", err)
+	items := make([]*PodcastEpisode, 0, len(episodes))
+	for _, episode := range episodes {
+		item := &PodcastEpisode{}
+		if err := copier.Copy(item, episode); err != nil {
+			slog.Error("copier.Copy() error", "err", err)
+			return nil, fmt.Errorf("copier.Copy() error, err = %w", err)
+		}
+
+		duration, err := parseDuration(episode.Duration)
+		if err != nil {
+			return nil, fmt.Errorf("parseDuration() error, err = %w", err)
+		}
+		item.Duration = duration
+		items = append(items, item)
 	}
 
 	resp := &ListPodcastEpisodeResp{
@@ -62,4 +74,69 @@ func (b *Backend) ListPodcastEpisode(ctx context.Context, req *ListPodcastEpisod
 	}
 
 	return resp, nil
+}
+
+// parseDuration 解析 iTunes duration 字段并将其转换为秒数
+func parseDuration(durationStr string) (string, error) {
+	var secondNum int
+	parts := strings.Split(durationStr, ":")
+	switch len(parts) {
+	case 1:
+		// 只有秒数
+		seconds, err := strconv.Atoi(parts[0])
+		if err != nil {
+			slog.Error("strconv.Atoi() error", "err", err)
+			return "", fmt.Errorf("strconv.Atoi() error, err = %w", err)
+		}
+		secondNum = seconds
+	case 2:
+		// MM:SS
+		minutes, err := strconv.Atoi(parts[0])
+		if err != nil {
+			slog.Error("strconv.Atoi() error", "err", err)
+			return "", fmt.Errorf("strconv.Atoi() error, err = %w", err)
+		}
+		seconds, err := strconv.Atoi(parts[1])
+		if err != nil {
+			slog.Error("strconv.Atoi() error", "err", err)
+			return "", fmt.Errorf("strconv.Atoi() error, err = %w", err)
+		}
+		secondNum = minutes*60 + seconds
+	case 3:
+		// HH:MM:SS
+		hours, err := strconv.Atoi(parts[0])
+		if err != nil {
+			slog.Error("strconv.Atoi() error", "err", err)
+			return "", fmt.Errorf("strconv.Atoi() error, err = %w", err)
+		}
+		minutes, err := strconv.Atoi(parts[1])
+		if err != nil {
+			slog.Error("strconv.Atoi() error", "err", err)
+			return "", fmt.Errorf("strconv.Atoi() error, err = %w", err)
+		}
+		seconds, err := strconv.Atoi(parts[2])
+		if err != nil {
+			slog.Error("strconv.Atoi() error", "err", err)
+			return "", fmt.Errorf("strconv.Atoi() error, err = %w", err)
+		}
+		secondNum = hours*3600 + minutes*60 + seconds
+	default:
+		slog.Error("invalid duration format", "duration", durationStr)
+		return "", fmt.Errorf("invalid duration format: %s", durationStr)
+	}
+
+	s := fmt.Sprintf("%vs", secondNum)
+	duration, err := time.ParseDuration(s)
+	if err != nil {
+		slog.Error("time.ParseDuration() error", "err", err)
+		return "", fmt.Errorf("time.ParseDuration() error, err = %w", err)
+	}
+
+	if duration.Minutes() < 1 {
+		return duration.String(), nil
+	}
+
+	res := strings.TrimSuffix(duration.Round(time.Minute).String(), "0s")
+
+	return res, nil
 }
