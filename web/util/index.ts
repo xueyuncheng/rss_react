@@ -1,4 +1,10 @@
-import { Dinner, WhatToEatDinner, PodcastShow, PodcastEpisode } from '@/types'
+import {
+  Dinner,
+  WhatToEatDinner,
+  PodcastShow,
+  AddPodcastShowReq,
+  PodcastEpisode,
+} from '@/types'
 
 export type Response<T> = {
   err: string
@@ -67,6 +73,14 @@ async function listPodcastShow(
   return fetcher(`/api/podcasts/shows?page_no=${pageNo}&page_size=${pageSize}`)
 }
 
+async function deletePodcastShow(id: number): Promise<Response<any>> {
+  return fetcher(`/api/podcasts/shows/${id}`, 'DELETE')
+}
+
+async function addPodcastShow(show: AddPodcastShowReq): Promise<Response<any>> {
+  return fetcher('/api/podcasts/shows', 'POST', show)
+}
+
 async function listPodcastEpisode(
   pageNo: number,
   pageSize: number,
@@ -85,5 +99,7 @@ export const api = {
   deleteDinner,
   whatToEatDinner,
   listPodcastShow,
+  deletePodcastShow,
+  addPodcastShow,
   listPodcastEpisode,
 }

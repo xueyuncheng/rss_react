@@ -12,10 +12,15 @@ export type WhatToEatDinner = {
 export type PodcastShow = {
   id: number
   name: string
+  address: string
   description: string
   image_url: string
   image_object_name: string
   updated_at: string
+}
+
+export type AddPodcastShowReq = {
+  address: string
 }
 
 export type PodcastEpisode = {
