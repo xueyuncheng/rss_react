@@ -26,7 +26,7 @@ type Props = {
   onClose: () => void
 }
 
-const PodcastShowForm = (props: Props) => {
+const PodcastShowForm = ({ type, onClose }: Props) => {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +54,8 @@ const PodcastShowForm = (props: Props) => {
         variant: 'destructive',
       })
     } finally {
+      setLoading(false)
+      onClose()
     }
   }
 
