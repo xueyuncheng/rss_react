@@ -8,24 +8,33 @@ import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 const HandleAudio = ({ row }: { row: { original: PodcastEpisode } }) => {
-  const [audio] = useState(new Audio(row.original.enclosure_url))
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
-    const handleEnded = () => setIsPlaying(false)
-    audio.addEventListener('ended', handleEnded)
-    return () => {
-      audio.removeEventListener('ended', handleEnded)
+    if (audio) {
+      const handleEnded = () => setIsPlaying(false)
+      audio.addEventListener('ended', handleEnded)
+      return () => {
+        audio.removeEventListener('ended', handleEnded)
+      }
     }
   }, [audio])
 
   const togglePlayPause = () => {
-    if (isPlaying) {
-      audio.pause()
+    if (!audio) {
+      const newAudio = new Audio(row.original.enclosure_url)
+      setAudio(newAudio)
+      newAudio.play()
+      setIsPlaying(true)
     } else {
-      audio.play()
+      if (isPlaying) {
+        audio.pause()
+      } else {
+        audio.play()
+      }
+      setIsPlaying(!isPlaying)
     }
-    setIsPlaying(!isPlaying)
   }
 
   return (
