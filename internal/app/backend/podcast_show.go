@@ -2,6 +2,7 @@ package backend
 
 import (
 	"backend/internal/pkg/constant"
+	"backend/internal/pkg/database"
 	"backend/internal/pkg/table"
 	"context"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/minio/minio-go/v7"
 	"github.com/mmcdole/gofeed"
+	"gorm.io/gorm"
 )
 
 type Show struct {
@@ -57,7 +59,90 @@ func (b *Backend) ListShow(ctx context.Context, req *ListShowReq) (*ListShowResp
 		Items: items,
 	}
 
+	go func() {
+		slog.Info("refreshShowAll() start")
+		defer slog.Info("refreshShowAll() end")
+		_ = refreshShowAll(b.db)
+	}()
+
 	return resp, nil
+}
+
+func refreshShowAll(db *database.Database) error {
+	if err := db.DB.Transaction(func(tx *gorm.DB) error {
+		var shows []*table.PodcastShow
+		if err := tx.Find(&shows).Error; err != nil {
+			slog.Error("tx.Find() error", "err", err)
+			return fmt.Errorf("tx.Find() error, err = %w", err)
+		}
+
+		for _, show := range shows {
+			episodes, err := refreshShow(context.Background(), show)
+			if err != nil {
+				slog.Error("refreshShow() error", "err", err)
+				return fmt.Errorf("refreshShow() error, err = %w", err)
+			}
+
+			if len(episodes) == 0 {
+				continue
+			}
+
+			if err := tx.Create(episodes).Error; err != nil {
+				slog.Error("tx.Create() error", "err", err)
+				return fmt.Errorf("tx.Create() error, err = %w", err)
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return fmt.Errorf("db.DB.Transaction() error, err = %w", err)
+	}
+
+	return nil
+}
+
+func refreshShow(ctx context.Context, show *table.PodcastShow) ([]*table.PodcastEpisode, error) {
+	fp := gofeed.NewParser()
+	feed, err := fp.ParseURLWithContext(show.Address, ctx)
+	if err != nil {
+		slog.Error("fp.ParseURLWithContext() error", "err", err)
+		return nil, fmt.Errorf("fp.ParseURLWithContext() error, err = %w", err)
+	}
+
+	newItems := make([]*table.PodcastEpisode, 0, len(feed.Items))
+	for _, item := range feed.Items {
+		if !item.PublishedParsed.After(show.PublishedAt) {
+			continue
+		}
+
+		var enclosureURL string
+		if len(item.Enclosures) > 0 {
+			enclosureURL = item.Enclosures[0].URL
+		}
+
+		var publishedAt time.Time
+		if item.PublishedParsed != nil {
+			publishedAt = *item.PublishedParsed
+		}
+
+		var duration string
+		if item.ITunesExt != nil {
+			duration = item.ITunesExt.Duration
+		}
+
+		newItem := &table.PodcastEpisode{
+			Name:         item.Title,
+			ShowID:       int(show.ID),
+			ShowName:     show.Name,
+			EnclosureURL: enclosureURL,
+			GUID:         item.GUID,
+			PublishedAt:  publishedAt,
+			Duration:     duration,
+		}
+		newItems = append(newItems, newItem)
+	}
+
+	return newItems, nil
 }
 
 type AddShowReq struct {
@@ -131,7 +216,7 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 		}
 
 		var enclosureURL string
-		if item.Enclosures != nil {
+		if len(item.Enclosures) > 0 {
 			enclosureURL = item.Enclosures[0].URL
 		}
 
