@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"sync/atomic"
 
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
@@ -35,9 +36,10 @@ func (c *Config) Addr() string {
 type Backend struct {
 	config *Config
 
-	db    *database.Database
-	minio *minio.Client
-	cron  *cron.Cron
+	db                  *database.Database
+	minio               *minio.Client
+	cron                *cron.Cron
+	isPodcastRefreshing atomic.Bool
 }
 
 func New(config *Config) error {

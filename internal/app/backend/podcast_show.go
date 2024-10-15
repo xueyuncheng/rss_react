@@ -60,42 +60,57 @@ func (b *Backend) ListShow(ctx context.Context, req *ListShowReq) (*ListShowResp
 	}
 
 	go func() {
+		if !b.isPodcastRefreshing.CompareAndSwap(false, true) {
+			slog.Info("podcast is refreshing")
+			return
+		}
+
 		slog.Info("refreshShowAll() start")
 		defer slog.Info("refreshShowAll() end")
 		_ = refreshShowAll(b.db)
+		defer b.isPodcastRefreshing.Store(false)
 	}()
 
 	return resp, nil
 }
 
 func refreshShowAll(db *database.Database) error {
-	if err := db.DB.Transaction(func(tx *gorm.DB) error {
-		var shows []*table.PodcastShow
-		if err := tx.Find(&shows).Error; err != nil {
-			slog.Error("tx.Find() error", "err", err)
-			return fmt.Errorf("tx.Find() error, err = %w", err)
-		}
+	var shows []*table.PodcastShow
+	if err := db.DB.Find(&shows).Error; err != nil {
+		slog.Error("tx.Find() error", "err", err)
+		return fmt.Errorf("tx.Find() error, err = %w", err)
+	}
 
-		for _, show := range shows {
-			episodes, err := refreshShow(context.Background(), show)
+	for _, show := range shows {
+		if err := db.DB.Transaction(func(tx *gorm.DB) error {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+
+			episodes, err := refreshShow(ctx, show)
 			if err != nil {
 				slog.Error("refreshShow() error", "err", err)
 				return fmt.Errorf("refreshShow() error, err = %w", err)
 			}
 
 			if len(episodes) == 0 {
-				continue
+				return nil
 			}
 
 			if err := tx.Create(episodes).Error; err != nil {
 				slog.Error("tx.Create() error", "err", err)
 				return fmt.Errorf("tx.Create() error, err = %w", err)
 			}
-		}
 
-		return nil
-	}); err != nil {
-		return fmt.Errorf("db.DB.Transaction() error, err = %w", err)
+			if err := tx.Where("id = ?", show.ID).
+				Updates(&table.PodcastShow{PublishedAt: time.Now()}).Error; err != nil {
+				slog.Error("tx.Updates() error", "err", err)
+				return fmt.Errorf("tx.Updates() error, err = %w", err)
+			}
+
+			return nil
+		}); err != nil {
+			return fmt.Errorf("db.DB.Transaction() error, err = %w", err)
+		}
 	}
 
 	return nil
@@ -179,11 +194,6 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 		return nil, fmt.Errorf("fp.ParseURLWithContext() error, err = %w", err)
 	}
 
-	var publishedAt time.Time
-	if feed.PublishedParsed != nil {
-		publishedAt = *feed.PublishedParsed
-	}
-
 	var imageURL, imageObjectName string
 	if feed.Image != nil {
 		imageURL = feed.Image.URL
@@ -198,50 +208,11 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 	show := &table.PodcastShow{
 		Name:            feed.Title,
 		Address:         req.Address,
-		PublishedAt:     publishedAt,
 		ImageURL:        imageURL,
 		ImageObjectName: imageObjectName,
 	}
 
 	if err := getTx(ctx).Create(show).Error; err != nil {
-		slog.Error("tx.Create() error", "err", err)
-		return nil, fmt.Errorf("tx.Create() error, err = %w", err)
-	}
-
-	episodes := make([]*table.PodcastEpisode, 0, len(feed.Items))
-	for _, item := range feed.Items {
-		var publishedAt time.Time
-		if item.PublishedParsed != nil {
-			publishedAt = *item.PublishedParsed
-		}
-
-		var enclosureURL string
-		if len(item.Enclosures) > 0 {
-			enclosureURL = item.Enclosures[0].URL
-		}
-
-		var duration string
-		if item.ITunesExt != nil {
-			duration = item.ITunesExt.Duration
-		}
-
-		episode := &table.PodcastEpisode{
-			Name:         item.Title,
-			ShowID:       int(show.ID),
-			ShowName:     show.Name,
-			EnclosureURL: enclosureURL,
-			GUID:         item.GUID,
-			PublishedAt:  publishedAt,
-			Duration:     duration,
-		}
-		episodes = append(episodes, episode)
-	}
-
-	if len(episodes) == 0 {
-		return &AddShowResp{}, nil
-	}
-
-	if err := getTx(ctx).Create(episodes).Error; err != nil {
 		slog.Error("tx.Create() error", "err", err)
 		return nil, fmt.Errorf("tx.Create() error, err = %w", err)
 	}
