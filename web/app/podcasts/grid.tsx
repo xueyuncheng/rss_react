@@ -23,7 +23,28 @@ import Link from 'next/link'
 
 import { formatDistanceToNow } from 'date-fns'
 
-import { Trash2 } from 'lucide-react'
+import { Ellipsis, Trash2 } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 type Props = {
   shows: PodcastShow[]
@@ -53,13 +74,11 @@ const Grid = ({ shows, onDelete }: Props) => {
             <Card className="h-128 w-64 transform transition-transform duration-300 hover:scale-105">
               <CardHeader>
                 <CardTitle>
-                  <Link href={`/podcasts/${show.id}`} title={show.name}>
-                    {show.name}
+                  <Link href={`/podcasts/${show.id}`}>
+                    <p className="truncate">{show.name}</p>
                   </Link>
                 </CardTitle>
-                <CardDescription className="truncate" title={show.description}>
-                  {show.description}
-                </CardDescription>
+                <CardDescription>{show.description}</CardDescription>
               </CardHeader>
               <CardContent className="relative group">
                 <Link href={`/podcasts/latest_episodes?show_id=${show.id}`}>
@@ -70,13 +89,23 @@ const Grid = ({ shows, onDelete }: Props) => {
                     width={240}
                   />
                 </Link>
-                <button
-                  onClick={() => onDelete(show.id)}
-                  title="删除"
-                  className="absolute bottom-8 right-8 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-                >
-                  <Trash2 size={16} />
-                </button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="absolute bottom-8 right-8 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-red-600 focus:opacity-100 active:opacity-100">
+                    <Ellipsis />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/podcasts/${show.id}`}>查看</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onDelete(show.id)}>
+                      删除
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/podcasts/${show.id}/edit`}>编辑</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </CardContent>
               <CardFooter>
                 <span>
