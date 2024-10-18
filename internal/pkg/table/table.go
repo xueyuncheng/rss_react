@@ -87,6 +87,7 @@ type PodcastShow struct {
 	gorm.Model
 
 	Name            string
+	Description     string
 	Address         string
 	PublishedAt     time.Time
 	ImageURL        string
