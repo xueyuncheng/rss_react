@@ -61,6 +61,7 @@ func (b *Backend) route() error {
 		show := podcast.Group("/shows")
 		{
 			show.GET("", wrap(b.ListShow))
+			show.GET("/:id", wrap(b.GetShow))
 			show.POST("", wrap(b.AddShow))
 			show.DELETE("/:id", wrap(b.DeleteShow))
 		}

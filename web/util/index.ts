@@ -73,6 +73,10 @@ async function listPodcastShow(
   return fetcher(`/api/podcasts/shows?page_no=${pageNo}&page_size=${pageSize}`)
 }
 
+async function getPodcastShow(id: number): Promise<Response<PodcastShow>> {
+  return fetcher(`/api/podcasts/shows/${id}`)
+}
+
 async function deletePodcastShow(id: number): Promise<Response<any>> {
   return fetcher(`/api/podcasts/shows/${id}`, 'DELETE')
 }
@@ -99,6 +103,7 @@ export const api = {
   deleteDinner,
   whatToEatDinner,
   listPodcastShow,
+  getPodcastShow,
   deletePodcastShow,
   addPodcastShow,
   listPodcastEpisode,

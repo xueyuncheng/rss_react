@@ -20,6 +20,7 @@ import (
 type Show struct {
 	ID              int       `json:"id"`
 	Name            string    `json:"name"`
+	Description     string    `json:"description"`
 	Address         string    `json:"address"`
 	UpdatedAt       time.Time `json:"updated_at"`
 	ImageURL        string    `json:"image_url"`
@@ -160,6 +161,30 @@ func refreshShow(ctx context.Context, show *table.PodcastShow) ([]*table.Podcast
 	return newItems, nil
 }
 
+type GetShowReq struct {
+	ID int `uri:"id" binding:"required"`
+}
+
+type GetShowResp struct {
+	Show
+}
+
+func (b *Backend) GetShow(ctx context.Context, req *GetShowReq) (*GetShowResp, error) {
+	var show *table.PodcastShow
+	if err := getTx(ctx).Where("id = ?", req.ID).First(&show).Error; err != nil {
+		slog.Error("tx.First() error", "err", err)
+		return nil, fmt.Errorf("tx.First() error, err = %w", err)
+	}
+
+	resp := &GetShowResp{}
+	if err := copier.Copy(&resp, show); err != nil {
+		slog.Error("copier.Copy() error", "err", err)
+		return nil, fmt.Errorf("copier.Copy() error, err = %w", err)
+	}
+
+	return resp, nil
+}
+
 type AddShowReq struct {
 	Address string `json:"address" binding:"required"`
 }
@@ -207,6 +232,7 @@ func (b *Backend) AddShow(ctx context.Context, req *AddShowReq) (*AddShowResp, e
 
 	show := &table.PodcastShow{
 		Name:            feed.Title,
+		Description:     feed.Description,
 		Address:         req.Address,
 		ImageURL:        imageURL,
 		ImageObjectName: imageObjectName,
