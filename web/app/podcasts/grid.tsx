@@ -23,18 +23,7 @@ import Link from 'next/link'
 
 import { formatDistanceToNow } from 'date-fns'
 
-import { Ellipsis, Trash2 } from 'lucide-react'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+import { Ellipsis } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -44,7 +33,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
 
 type Props = {
   shows: PodcastShow[]
@@ -71,7 +59,7 @@ const Grid = ({ shows, onDelete }: Props) => {
       <div className="grid grid-cols-3 gap-4">
         {shows.map((show) => (
           <div key={show.id}>
-            <Card className="h-128 w-64 transform transition-transform duration-300 hover:scale-105">
+            <Card className="h-128 w-64">
               <CardHeader>
                 <CardTitle>
                   <Link href={`/podcasts/${show.id}`}>
@@ -80,7 +68,7 @@ const Grid = ({ shows, onDelete }: Props) => {
                 </CardTitle>
                 <CardDescription>{show.description}</CardDescription>
               </CardHeader>
-              <CardContent className="relative group">
+              <CardContent>
                 <Link href={`/podcasts/latest_episodes?show_id=${show.id}`}>
                   <Image
                     src={`/api/files/${show.image_object_name}`}
@@ -89,9 +77,15 @@ const Grid = ({ shows, onDelete }: Props) => {
                     width={240}
                   />
                 </Link>
-
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <span>
+                  {formatDistanceToNow(new Date(show.updated_at), {
+                    addSuffix: true,
+                  })}
+                </span>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="absolute bottom-8 right-8 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-red-600 focus:opacity-100 active:opacity-100">
+                  <DropdownMenuTrigger>
                     <Ellipsis />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -106,13 +100,6 @@ const Grid = ({ shows, onDelete }: Props) => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </CardContent>
-              <CardFooter>
-                <span>
-                  {formatDistanceToNow(new Date(show.updated_at), {
-                    addSuffix: true,
-                  })}
-                </span>
               </CardFooter>
             </Card>
           </div>
