@@ -1,5 +1,6 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -15,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { PodcastShow } from '@/types'
 
 const formSchema = z.object({
@@ -81,7 +83,7 @@ const ViewEditPodcastShowForm = ({ type, show }: Props) => {
             <FormItem>
               <FormLabel>描述</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Textarea {...field} className="h-full" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -114,6 +116,12 @@ const ViewEditPodcastShowForm = ({ type, show }: Props) => {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <Image
+          src={`/api/files/` + show.image_object_name}
+          alt={show.name}
+          height={240}
+          width={240}
         />
 
         <FormField
