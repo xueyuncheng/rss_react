@@ -1,5 +1,6 @@
-import DinnerForm from '@/components/DinnerForm'
 import React from 'react'
+
+import DinnerForm from '@/components/DinnerForm'
 
 type Props = {}
 

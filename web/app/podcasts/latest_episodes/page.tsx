@@ -1,8 +1,8 @@
 'use client'
-import { PodcastEpisode } from '@/types'
+
+import { usePathname, useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { DataTable } from './data-table'
-import { columns } from './column'
+
 import {
   Pagination,
   PaginationContent,
@@ -10,9 +10,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { util } from '@/util/util'
+import { PodcastEpisode } from '@/types'
 import { api } from '@/util'
+import { util } from '@/util/util'
+
+import { columns } from './column'
+import { DataTable } from './data-table'
 
 const Page = () => {
   const [episodes, setEpisodes] = useState<PodcastEpisode[]>([])

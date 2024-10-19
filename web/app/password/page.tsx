@@ -1,8 +1,9 @@
 'use client'
+import { Copy } from 'lucide-react'
+import React, { useEffect,useState } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import React, { useState, useEffect } from 'react'
-import { Copy } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 
 type Props = {}

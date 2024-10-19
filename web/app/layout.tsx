@@ -1,6 +1,10 @@
+import './globals.css'
+
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
+import Link from 'next/link'
+import { Suspense } from 'react'
+
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -9,9 +13,7 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 import { Toaster } from '@/components/ui/toaster'
-import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { Suspense } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 

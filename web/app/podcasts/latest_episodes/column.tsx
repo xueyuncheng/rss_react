@@ -1,11 +1,12 @@
 'use client'
 
-import { PodcastEpisode } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
-import { Play, Pause } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
+import { Pause,Play } from 'lucide-react'
 import { useEffect, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { PodcastEpisode } from '@/types'
 
 const HandleAudio = ({ row }: { row: { original: PodcastEpisode } }) => {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null)

@@ -1,11 +1,10 @@
 'use client'
-import { PodcastShow } from '@/types'
+import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
-import { useParams } from 'next/navigation'
-
-import { api } from '@/util'
 import ViewEditPodcastShowForm from '@/components/ViewEditPodcastShowForm'
+import { PodcastShow } from '@/types'
+import { api } from '@/util'
 
 const Page = () => {
   const { id } = useParams<{ id: string }>()
