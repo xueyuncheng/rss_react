@@ -1,15 +1,12 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { api } from '@/util'
-import { Dinner } from '@/types'
-
-import { Button } from '@/components/ui/button'
-
 import { usePathname, useSearchParams } from 'next/navigation'
-import { DataTable } from '@/app/dinners/data-table'
+import React, { useEffect, useState } from 'react'
+
 import { columns } from '@/app/dinners/columns'
+import { DataTable } from '@/app/dinners/data-table'
+import { Button } from '@/components/ui/button'
 import {
   Pagination,
   PaginationContent,
@@ -17,7 +14,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-
+import { Dinner } from '@/types'
+import { api } from '@/util'
 import { util } from '@/util/util'
 
 const Page = () => {

@@ -1,7 +1,8 @@
 'use client'
-import React, { useState } from 'react'
-import { DefaultFetcher, Response } from '../config/config'
 import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useState } from 'react'
+
+import { DefaultFetcher, Response } from '../config/config'
 
 const Login = () => {
   const [name, setUsername] = useState('')

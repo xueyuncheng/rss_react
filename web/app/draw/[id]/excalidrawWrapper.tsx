@@ -1,12 +1,12 @@
 'use client'
-import { Excalidraw } from '@excalidraw/excalidraw'
-import { serializeAsJSON, getSceneVersion } from '@excalidraw/excalidraw'
+import { Excalidraw , getSceneVersion,serializeAsJSON } from '@excalidraw/excalidraw'
 import { ExcalidrawElement } from '@excalidraw/excalidraw/types/element/types'
 import { AppState, BinaryFiles } from '@excalidraw/excalidraw/types/types'
+import { useParams } from 'next/navigation'
 import { useRef, useState } from 'react'
 import useSWR from 'swr'
+
 import { DefaultFetcher, Response } from '../../config/config'
-import { useParams } from 'next/navigation'
 
 type Draw = {
     id: number

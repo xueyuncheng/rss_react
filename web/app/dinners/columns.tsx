@@ -1,8 +1,9 @@
 'use client'
 
-import { Dinner } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
+import Link from 'next/link'
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import Link from 'next/link'
+import { Dinner } from '@/types'
 import { api } from '@/util'
 
 export const columns: ColumnDef<Dinner>[] = [

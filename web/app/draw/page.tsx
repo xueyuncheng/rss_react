@@ -1,9 +1,10 @@
 'use client'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import useSWR, { mutate } from 'swr'
+
 import { DefaultFetcher, ResponsePage } from '../config/config'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 type Draw = {
   id: number

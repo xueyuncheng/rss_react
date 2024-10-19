@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+
 import SideBar from './SideBar'
 
 export const metadata: Metadata = {
