@@ -63,7 +63,6 @@ const Grid = ({ shows, onDelete }: Props) => {
                     <p className="truncate">{show.name}</p>
                   </Link>
                 </CardTitle>
-                <CardDescription>{show.description}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Link href={`/podcasts/latest_episodes?show_id=${show.id}`}>
