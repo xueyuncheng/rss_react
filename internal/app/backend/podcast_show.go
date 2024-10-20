@@ -22,7 +22,7 @@ type Show struct {
 	Name            string    `json:"name"`
 	Description     string    `json:"description"`
 	Address         string    `json:"address"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	PublishedAt     time.Time `json:"published_at"`
 	ImageURL        string    `json:"image_url"`
 	ImageObjectName string    `json:"image_object_name"`
 }
@@ -87,7 +87,7 @@ func refreshShowAll(db *database.Database) error {
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
 
-			episodes, err := refreshShow(ctx, show)
+			episodes, publishedAt, err := refreshShow(ctx, show)
 			if err != nil {
 				slog.Error("refreshShow() error", "err", err)
 				return fmt.Errorf("refreshShow() error, err = %w", err)
@@ -103,7 +103,7 @@ func refreshShowAll(db *database.Database) error {
 			}
 
 			if err := tx.Where("id = ?", show.ID).
-				Updates(&table.PodcastShow{PublishedAt: time.Now()}).Error; err != nil {
+				Updates(&table.PodcastShow{PublishedAt: publishedAt}).Error; err != nil {
 				slog.Error("tx.Updates() error", "err", err)
 				return fmt.Errorf("tx.Updates() error, err = %w", err)
 			}
@@ -117,15 +117,16 @@ func refreshShowAll(db *database.Database) error {
 	return nil
 }
 
-func refreshShow(ctx context.Context, show *table.PodcastShow) ([]*table.PodcastEpisode, error) {
+func refreshShow(ctx context.Context, show *table.PodcastShow) ([]*table.PodcastEpisode, time.Time, error) {
 	fp := gofeed.NewParser()
 	feed, err := fp.ParseURLWithContext(show.Address, ctx)
 	if err != nil {
 		slog.Error("fp.ParseURLWithContext() error", "err", err)
-		return nil, fmt.Errorf("fp.ParseURLWithContext() error, err = %w", err)
+		return nil, time.Time{}, fmt.Errorf("fp.ParseURLWithContext() error, err = %w", err)
 	}
 
 	newItems := make([]*table.PodcastEpisode, 0, len(feed.Items))
+	var latestPublishedAt time.Time
 	for _, item := range feed.Items {
 		if !item.PublishedParsed.After(show.PublishedAt) {
 			continue
@@ -139,6 +140,10 @@ func refreshShow(ctx context.Context, show *table.PodcastShow) ([]*table.Podcast
 		var publishedAt time.Time
 		if item.PublishedParsed != nil {
 			publishedAt = *item.PublishedParsed
+
+			if publishedAt.After(latestPublishedAt) {
+				latestPublishedAt = publishedAt
+			}
 		}
 
 		var duration string
@@ -158,7 +163,7 @@ func refreshShow(ctx context.Context, show *table.PodcastShow) ([]*table.Podcast
 		newItems = append(newItems, newItem)
 	}
 
-	return newItems, nil
+	return newItems, latestPublishedAt, nil
 }
 
 type GetShowReq struct {

@@ -16,7 +16,7 @@ export type PodcastShow = {
   description: string
   image_url: string
   image_object_name: string
-  updated_at: string
+  published_at: Date
 }
 
 export type AddPodcastShowReq = {
