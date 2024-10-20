@@ -76,7 +76,7 @@ const Grid = ({ shows, onDelete }: Props) => {
               </CardContent>
               <CardFooter className="flex justify-between">
                 <span>
-                  {formatDistanceToNow(new Date(show.updated_at), {
+                  {formatDistanceToNow(new Date(show.published_at), {
                     addSuffix: true,
                   })}
                 </span>
