@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 
-type Props = {}
-
 const encouragements = [
   '三代之内，必出兴家之子',
   '别人少年得志你莫及，大器晚成显真章',
@@ -29,7 +27,7 @@ const encouragements = [
   '积土成山，风雨兴焉；积水成渊，蛟龙生焉',
 ]
 
-const Encouragement = (props: Props) => {
+const Encouragement = () => {
   const [encouragement, setEncouragement] = useState('')
 
   const getRandomEncouragement = () => {
