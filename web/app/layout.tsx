@@ -29,6 +29,7 @@ const menus: Menu[] = [
   { name: '夜宵功能', href: '/dinners' },
   { name: '密码生成', href: '/password' },
   { name: 'Podcast', href: '/podcasts' },
+  { name: '每日鼓励', href: '/encouragement' },
 ]
 
 export default function RootLayout({
