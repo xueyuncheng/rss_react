@@ -1,7 +1,6 @@
 import './globals.css'
 
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
@@ -14,8 +13,6 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Toaster } from '@/components/ui/toaster'
 import { cn } from '@/lib/utils'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: '薛运成的网站',
@@ -42,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, 'flex flex-col gap-2')}>
+      <body className={cn('font-sans', 'flex flex-col gap-2')}>
         <NavigationMenu>
           <NavigationMenuList>
             {menus.map((menu) => (
